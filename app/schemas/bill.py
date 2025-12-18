@@ -1,4 +1,5 @@
-from pydantic import BaseModel, DateTime, Field, Decimal
+from pydantic import BaseModel, Field, Decimal
+from datetime import datetime
 
 # Bill common scheme
 class BillBase(BaseModel):
@@ -12,5 +13,5 @@ class BillBase(BaseModel):
 class BillRead(BillBase):
     id: int
 
-    class Config:
+    class Config:   
         from_attributes = True

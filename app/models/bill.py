@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String, DateTime, Numeric, ForeignKey
+from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.core.database import Base
 
@@ -13,3 +14,6 @@ class Bill(Base):
     date = Column(DateTime(timezone=True), server_default=func.now())
     comment = Column(String(400))
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    # Relation ships
+    user = relationship("User", back_populates="bills")
