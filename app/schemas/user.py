@@ -17,3 +17,8 @@ class UserRead(UserBase):
 
     class Config:
         from_attributes = True 
+
+# User updating scheme
+class UserUpdate(UserBase):
+    email: EmailStr | None = None
+    password: str | None = None

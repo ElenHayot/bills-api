@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
 
 from app.crud import user_db
-from app.schemas.user import UserCreate, UserRead
+from app.schemas.user import UserCreate, UserUpdate
 from app.core.security import hash_password
 from app.models.user import User
 
@@ -26,6 +26,10 @@ def create_user(db: Session, user: UserCreate):
 
     return user_db.create_user(db, user)
 
+# Get all users
+def get_all_users(db: Session):
+    return user_db.get_all_users(db)
+
 # Find a user by its id
 def get_user_by_id(db: Session, user_id: int):
     user = user_db.get_user_by_id(db, user_id)
@@ -41,9 +45,12 @@ def get_user_by_email(db: Session, email: str):
     return user
 
 # Update the logged user
-def update_user(db: Session, logged_user, updates: UserCreate):   
+def update_user(db: Session, logged_user, updates: UserUpdate, user_email: str):
+    if not logged_user :
+        raise HTTPException(status_code=401, detail=f"Il faut être connecté pour pouvoir exécuter cette opération")
+    
     # Current user (db model)
-    user= user_db.get_user_by_id(db, logged_user.id)  
+    user = user_db.get_user_by_email(db, user_email)  
     if not user:
         raise HTTPException(status_code=404, detail=f"Utilisateur inconnu")
 
@@ -56,14 +63,10 @@ def update_user(db: Session, logged_user, updates: UserCreate):
 
 # Delete an account
 def delete_user(db: Session, logged_user, user_email):
-    if (user_email):
-        user = get_user_by_email(user_email)
-
-    print(f"🫠 1 - user id = {user.id}")
-    # Current user (db model)
-    user = user | user_db.get_user_by_id(db, logged_user.id)
-
-    print(f"🫠 2 - user id = {user.id}")
+    if not logged_user:
+        raise HTTPException(status_code=401, detail=f"Il faut être connecté pour pouvoir exécuter cette opération")
+    
+    user = get_user_by_email(db, user_email)
     if not user:
         raise HTTPException(status_code=404, detail=f"Utilisateur inconnu")
     

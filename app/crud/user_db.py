@@ -4,6 +4,11 @@ from app.models.user import User
 from app.core.security import verify_password
 from typing import Optional
 
+# Get all users
+def get_all_users(db: Session) -> list[User]:
+    users = db.execute(select(User))
+    return users.scalars().all()
+
 # Find a user by its id
 def get_user_by_id(db: Session, user_id: int) -> User | None:
     query = select(User).filter(User.id == user_id)
