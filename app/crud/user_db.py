@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import select, func
 from app.models.user import User
-from app.utils.password import verify_password
+from app.core.security import verify_password
 from typing import Optional
 
 # Find a user by its id

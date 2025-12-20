@@ -43,17 +43,6 @@ def upgrade() -> None:
     op.create_index(op.f('ix_bills_category_id'), 'bills', ['category_id'], unique=False)
     op.create_index(op.f('ix_bills_id'), 'bills', ['id'], unique=False)
     op.create_index(op.f('ix_bills_title'), 'bills', ['title'], unique=False)
-    op.bulk_insert(
-        sa.table(
-            "categories",
-            sa.column("id", sa.Integer),
-            sa.column("name", sa.String),
-            sa.column("color", sa.String),
-        ),
-        [
-            {"id": 0, "name": "Autres", "color": "#CCCCCC"},
-        ],
-    )
     # ### end Alembic commands ###
 
 

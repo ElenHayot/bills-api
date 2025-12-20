@@ -55,9 +55,15 @@ def update_user(db: Session, logged_user, updates: UserCreate):
     return user_db.update_user(db, user, update_data)
 
 # Delete an account
-def delete_user(db: Session, logged_user):
+def delete_user(db: Session, logged_user, user_email):
+    if (user_email):
+        user = get_user_by_email(user_email)
+
+    print(f"🫠 1 - user id = {user.id}")
     # Current user (db model)
-    user = user_db.get_user_by_id(db, logged_user.id)
+    user = user | user_db.get_user_by_id(db, logged_user.id)
+
+    print(f"🫠 2 - user id = {user.id}")
     if not user:
         raise HTTPException(status_code=404, detail=f"Utilisateur inconnu")
     

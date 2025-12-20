@@ -12,6 +12,8 @@ class BillBase(BaseModel):
 # Bill reading scheme
 class BillRead(BillBase):
     id: int
+    created_at: datetime
+    updated_at: datetime
 
     class Config:   
         from_attributes = True

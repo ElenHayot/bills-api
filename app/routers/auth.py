@@ -5,7 +5,7 @@ from app.core.database import get_db
 from app.schemas.auth import Token, RefreshRequest
 from app.services import auth_service
 
-auth_router = APIRouter(prefix="/auth", tags=["auth"])
+auth_router = APIRouter(tags=["auth"])
 
 # POST - Login endpoint
 @auth_router.post("/login", response_model=Token)
