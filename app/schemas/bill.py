@@ -17,3 +17,11 @@ class BillRead(BillBase):
 
     class Config:   
         from_attributes = True
+
+# Bill updating scheme
+class BillUpdate(BaseModel):
+    title: str | None = None
+    amount: Decimal | None = None
+    date: datetime | None = None
+    category_id: int | None = None
+    comment: str | None = Field(None, max_length=400)

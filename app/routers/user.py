@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from app.core.database import get_db
+from app.models.user import User
 from app.schemas.user import UserCreate, UserRead, UserUpdate
 from app.dependencies.auth import get_current_user
 from app.services import user_service
@@ -24,10 +25,10 @@ def read( user_email: str, db: Session = Depends(get_db)):
 
 # PUT : Update a user
 @user_router.put("/{user_email}", response_model=UserRead)
-def update(user_email: str, updates: UserUpdate, logged_user: UserRead = Depends(get_current_user),  db: Session = Depends(get_db)):
-    return user_service.update_user(db, logged_user, updates, user_email)
+def update(user_email: str, updates: UserUpdate, current_user: User = Depends(get_current_user),  db: Session = Depends(get_db)):
+    return user_service.update_user(db, current_user, updates, user_email)
 
 # DELETE : Delete a user
 @user_router.delete("/{user_email}")
-def delete(user_email: str, logged_user: UserRead = Depends(get_current_user), db: Session = Depends(get_db)):
-    return user_service.delete_user(db, logged_user, user_email)
+def delete(user_email: str, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    return user_service.delete_user(db, current_user, user_email)

@@ -14,3 +14,8 @@ class CategoryRead(CategoryBase):
 
     class Config:
         from_attributes = True
+
+# Category updating scheme
+class CategoryUpdate(BaseModel):
+    name: str | None = Field(..., max_length=100)
+    color: str | None = Field(..., max_length=20)

@@ -9,6 +9,7 @@ from app.models.user import User
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
+# Get current user - access token checking
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> User:
     try:
         print(f"😮‍💨 coucou dependencies.auth.get_current_user, token = {token}")
