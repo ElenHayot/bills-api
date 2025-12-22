@@ -2,25 +2,22 @@ from sqlalchemy.orm import Session
 from sqlalchemy import select
 from app.models.category import Category
 
-# Get all categories
-def get_all_categories(db: Session, user_id: int = None) -> list[Category]:
-    query = select(Category)
-
-    if user_id:
-        query = query.filter(Category.user_id == user_id)
+# Get all categories of one user
+def get_all_categories(db: Session, user_id: int) -> list[Category]:
+    query = select(Category).filter(Category.user_id == user_id)
     
     categories = db.execute(query)
     return categories.scalars().all()
 
-# Find a category by its id
-def get_category_by_id(db: Session, cat_id: int) -> Category | None:
-    query = select(Category).filter(Category.cat_id == cat_id)
+# Find a category by its id and user
+def get_category_by_id(db: Session, user_id: int, cat_id: int) -> Category | None:
+    query = select(Category).filter(Category.user_id == user_id, Category.cat_id == cat_id)
     category = db.execute(query)
     return category.scalar_one_or_none()
 
-# Find a category by its nam
-def get_category_by_name(db: Session, name: str) -> Category | None:
-    query = select(Category).filter(Category.name == name)
+# Find a category by its name and user
+def get_category_by_name(db: Session, user_id: int, name: str) -> Category | None:
+    query = select(Category).filter(Category.user_id == user_id, Category.name == name)
     category = db.execute(query)
     return category.scalar_one_or_none()
 

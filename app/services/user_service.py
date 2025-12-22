@@ -5,6 +5,7 @@ from app.crud import user_db
 from app.schemas.user import UserCreate, UserUpdate
 from app.core.security import hash_password
 from app.models.user import User
+from app.services import category_service
 
 # Create a new user
 def create_user(db: Session, user: UserCreate) -> User:
@@ -21,7 +22,12 @@ def create_user(db: Session, user: UserCreate) -> User:
         password_hash = hashed_password
     )
 
-    return user_db.create_user(db, user_to_create)
+    created_user = user_db.create_user(db, user_to_create)
+
+    # Create default associated category for the created user
+    category_service.create_default(db, created_user)
+
+    return created_user
 
 # Get all users
 def get_all_users(db: Session) -> list[User]:

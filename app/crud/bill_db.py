@@ -2,23 +2,21 @@ from sqlalchemy.orm import Session
 from sqlalchemy import select
 from app.models.bill import Bill
 
-# Get all bills
-def get_all_bills(db: Session, category_id: int = None, user_id: int = None, title: str = None) -> list[Bill]:
-    query = select(Bill)
+# Get all bills of one user
+def get_all_bills(db: Session, user_id: int, category_id: int = None, title: str = None) -> list[Bill]:
+    query = select(Bill).filter(Bill.user_id == user_id)
 
     if category_id:
         query = query.filter(Bill.category_id == category_id)
-    if user_id:
-        query = query.filter(Bill.user_id == user_id)
     if title:
         query = query.filter(Bill.title.ilike(f"%{title}%"))
     
     bills = db.execute(query)
     return bills.scalars().all()
 
-# Find a bill by its id
-def get_bill_by_id(db: Session, bill_id: int) -> Bill | None:
-    query = select(Bill).filter(Bill.id == bill_id)
+# Find a bill by its id and user
+def get_bill_by_id(db: Session, user_id: int, bill_id: int) -> Bill | None:
+    query = select(Bill).filter(Bill.user_id == user_id, Bill.id == bill_id)
     bill = db.execute(query)
     return bill.scalar_one_or_none()
 

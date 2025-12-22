@@ -1,4 +1,5 @@
-from pydantic import BaseModel, Field, Decimal
+from pydantic import BaseModel, Field
+from decimal import Decimal
 from datetime import datetime
 
 # Bill common scheme
