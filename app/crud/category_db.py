@@ -11,7 +11,7 @@ def get_all_categories(db: Session, user_id: int) -> list[Category]:
 
 # Find a category by its id and user
 def get_category_by_id(db: Session, user_id: int, cat_id: int) -> Category | None:
-    query = select(Category).filter(Category.user_id == user_id, Category.cat_id == cat_id)
+    query = select(Category).filter(Category.user_id == user_id, Category.id == cat_id)
     category = db.execute(query)
     return category.scalar_one_or_none()
 
@@ -30,7 +30,7 @@ def create_category(db: Session, category: Category) -> Category:
 
 # Update an existing category
 def update_category(db: Session, category: Category, updates: dict) -> Category:
-    for key, value in updates.items:
+    for key, value in updates.items():
         if hasattr(category, key):
             setattr(category, key, value)
     db.commit()

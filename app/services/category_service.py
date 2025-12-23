@@ -8,7 +8,7 @@ from app.crud import category_db
 # Create a new category
 def create_category(db: Session, current_user: User, category: CategoryBase) -> Category:
     # Check name unicity
-    existing_cat = category_db.get_category_by_name(db, category.name)
+    existing_cat = category_db.get_category_by_name(db, current_user.id, category.name)
     if existing_cat:
         raise HTTPException(status_code= status.HTTP_409_CONFLICT, detail="Nom de catégorie déjà utilisé")
     category_to_create = Category(
@@ -55,7 +55,7 @@ def delete_category(db: Session, current_user: User, name: str):
     if current_user.id != category.user_id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Vous ne pouvez pas supprimer cette catégorie.")
 
-    return category_db.delete_category(category)
+    return category_db.delete_category(db, category)
 
 # Create a default category
 def create_default(db: Session, current_user: User):

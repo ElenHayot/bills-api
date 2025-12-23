@@ -41,14 +41,12 @@ def update_bill(db: Session, current_user: User, bill_id: int, updates: BillUpda
     if updates.category_id:
         cat = category_service.get_category_by_id(db, current_user, updates.category_id)
 
-    update_data = Bill(**updates.model_dump(exclude_unset=True))
+    update_data = updates.model_dump(exclude_unset=True)
     return bill_db.update_bill(db, bill, update_data)
 
 # Delete an existing bill
 def delete_bill(db: Session, current_user: User, bill_id: int):
-    bill = bill_db.get_bill_by_id(bill_id)
-    if not bill:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Facture inconnue")
+    bill = get_bill_by_id(db, current_user, bill_id)
     
     # Check if user can delete this bill
     if current_user.id != bill.user_id:

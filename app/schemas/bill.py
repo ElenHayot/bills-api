@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from decimal import Decimal
 from datetime import datetime
 
@@ -9,6 +9,11 @@ class BillBase(BaseModel):
     date: datetime | None = None
     category_id: int
     comment: str | None = Field(None, max_length=400)
+
+    @field_validator("amount", mode="before")
+    @classmethod
+    def normalize_amount(cls, v):
+        return Decimal(str(v))
 
 # Bill reading scheme
 class BillRead(BillBase):

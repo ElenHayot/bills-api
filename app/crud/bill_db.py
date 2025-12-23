@@ -29,7 +29,7 @@ def create_bill(db: Session, bill: Bill) -> Bill:
 
 # Update an existing bill
 def update_bill(db: Session, bill: Bill, updates: dict) -> Bill:
-    for key, value in updates.items:
+    for key, value in updates.items():
         if hasattr(bill, key):
             setattr(bill, key, value)
     db.commit()

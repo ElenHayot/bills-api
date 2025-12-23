@@ -52,21 +52,22 @@ def update_user(db: Session, current_user: User, updates: UserUpdate, user_email
     if not current_user :
         raise HTTPException(status_code=401, detail=f"Il faut être connecté pour pouvoir exécuter cette opération")
     
-    # Current user (db model)
-    user = user_db.get_user_by_email(db, user_email)  
-    if not user:
-        raise HTTPException(status_code=404, detail=f"Utilisateur inconnu")
-    
-    # Verify if the user can update
-    if current_user.id != user.id:
+    # Verify if can update
+    if current_user.email != user_email:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f"Vous ne pouvez pas modifier cet utilisateur.")
     
+    # Verify email validity if changed
+    if updates.email:
+        user = user_db.get_user_by_email(db, updates.email)  
+        if user:
+            raise HTTPException(status_code=404, detail=f"Erreur : email déjà utilisé")
+
     # Generate update datas
     update_data = updates.model_dump(exclude_unset=True, exclude={'password'})
     if updates.password:
         update_data['password'] = hash_password(updates.password)
 
-    return user_db.update_user(db, user, update_data)
+    return user_db.update_user(db, current_user, update_data)
 
 # Delete an account
 def delete_user(db: Session, current_user: User, user_email):
