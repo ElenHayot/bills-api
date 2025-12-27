@@ -6,7 +6,7 @@ from typing import Optional
 
 # Get all users
 def get_all_users(db: Session) -> list[User]:
-    users = db.execute(select(User))
+    users = db.execute(select(User).order_by(User.email.asc()))
     return users.scalars().all()
 
 # Find a user by its id
@@ -45,6 +45,7 @@ def delete_user(db: Session, user: User):
     db.delete(user)
     db.commit()
 
+"""
 # Authenticate a user with its {email, password}
 def authenticate_user(db: Session, email: str, password: str) -> Optional[User]:
     user = get_user_by_email(db, email)
@@ -55,3 +56,4 @@ def authenticate_user(db: Session, email: str, password: str) -> Optional[User]:
         return None
     
     return user
+"""

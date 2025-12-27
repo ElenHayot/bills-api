@@ -4,7 +4,7 @@ from app.models.category import Category
 
 # Get all categories of one user
 def get_all_categories(db: Session, user_id: int) -> list[Category]:
-    query = select(Category).filter(Category.user_id == user_id)
+    query = select(Category).filter(Category.user_id == user_id).order_by(Category.name.asc())
     
     categories = db.execute(query)
     return categories.scalars().all()

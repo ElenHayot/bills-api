@@ -26,7 +26,9 @@ def get_all_bills(db: Session, current_user: User,
                     min_amount: Decimal = None, max_amount: Decimal = None) -> list[Bill]:
     
     offset = (page - 1) * page_size
-    return bill_db.get_all_bills(db, current_user.id, category_id, year, title, min_amount, max_amount, limit=page_size, offset=offset)
+    return bill_db.get_all_bills(db, current_user.id, category_id, year, title, 
+                                 min_amount, max_amount, 
+                                 limit=page_size, offset=offset)
 
 # Get an existing bill by its id - filtered by current user
 def get_bill_by_id(db: Session, current_user: User, bill_id: int) -> Bill:

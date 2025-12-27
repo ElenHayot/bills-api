@@ -11,7 +11,7 @@ def get_all_bills(db: Session, user_id: int,
                     min_amount: Decimal = None, max_amount: Decimal = None,
                     limit: int = None, offset: int = None) -> list[Bill]:
     
-    query = select(Bill).filter(Bill.user_id == user_id).order_by(Bill.date.desc())
+    query = select(Bill).filter(Bill.user_id == user_id).order_by(Bill.date.desc(), Bill.id.desc())
 
     if category_id:
         query = query.filter(Bill.category_id == category_id)
