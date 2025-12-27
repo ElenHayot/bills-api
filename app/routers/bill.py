@@ -5,7 +5,6 @@ from app.dependencies.auth import get_current_user
 from app.models.user import User
 from app.schemas.bill import BillBase, BillRead, BillUpdate, BillGBCategory, BillPeriodStats
 from app.services import bill_service
-from datetime import datetime
 from decimal import Decimal
 
 bill_router = APIRouter(tags=["Bills"])
@@ -18,9 +17,10 @@ def create(bill_data: BillBase, current_user: User = Depends(get_current_user), 
 # GET : Get all bills, filtered by current user
 @bill_router.get("/", response_model=list[BillRead])
 def read_all(db: Session = Depends(get_db), current_user: User = Depends(get_current_user), 
+             page: int = Query(1, ge=1), page_size: int = Query(20, ge=1, le=100), 
              category_id: int = Query(None), year: int = Query(None), title: str = Query(None),
              min_amount: Decimal = Query(None), max_amount: Decimal = Query(None)):
-    return bill_service.get_all_bills(db, current_user, category_id, year, title, min_amount, max_amount)
+    return bill_service.get_all_bills(db, current_user, page, page_size, category_id, year, title, min_amount, max_amount)
 
 """
 # GET : Get bills statistics for the total period

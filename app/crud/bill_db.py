@@ -6,9 +6,12 @@ from datetime import datetime
 from decimal import Decimal
 
 # Get all bills of one user
-def get_all_bills(db: Session, user_id: int, category_id: int = None, year: int = None, title: str = None,
-                  min_amount: Decimal = None, max_amount: Decimal = None) -> list[Bill]:
-    query = select(Bill).filter(Bill.user_id == user_id)
+def get_all_bills(db: Session, user_id: int,
+                    category_id: int = None, year: int = None, title: str = None,
+                    min_amount: Decimal = None, max_amount: Decimal = None,
+                    limit: int = None, offset: int = None) -> list[Bill]:
+    
+    query = select(Bill).filter(Bill.user_id == user_id).order_by(Bill.date.desc())
 
     if category_id:
         query = query.filter(Bill.category_id == category_id)
@@ -20,6 +23,11 @@ def get_all_bills(db: Session, user_id: int, category_id: int = None, year: int 
         query = query.filter(Bill.amount >= min_amount)
     if max_amount:
         query = query.filter(Bill.amount <= max_amount)
+
+    if limit:
+        query = query.limit(limit)
+    if offset:
+        query = query.offset(offset)
     
     bills = db.execute(query)
     return bills.scalars().all()

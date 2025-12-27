@@ -20,9 +20,13 @@ def create_bill(db: Session, current_user: User, bill: BillBase) -> Bill:
     return bill_db.create_bill(db, bill_to_create)
 
 # Get all bills - filtered by current user
-def get_all_bills(db: Session, current_user: User, category_id: int = None, year: int = None, title: str = None,
-                  min_amount: Decimal = None, max_amount: Decimal = None) -> list[Bill]:
-    return bill_db.get_all_bills(db, current_user.id, category_id, year, title, min_amount, max_amount)
+def get_all_bills(db: Session, current_user: User, 
+                    page: int, page_size: int,
+                    category_id: int = None, year: int = None, title: str = None,
+                    min_amount: Decimal = None, max_amount: Decimal = None) -> list[Bill]:
+    
+    offset = (page - 1) * page_size
+    return bill_db.get_all_bills(db, current_user.id, category_id, year, title, min_amount, max_amount, limit=page_size, offset=offset)
 
 # Get an existing bill by its id - filtered by current user
 def get_bill_by_id(db: Session, current_user: User, bill_id: int) -> Bill:
