@@ -1,15 +1,25 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import select
+from sqlalchemy import select, func, extract
 from app.models.bill import Bill
+from app.models.category import Category
+from datetime import datetime
+from decimal import Decimal
 
 # Get all bills of one user
-def get_all_bills(db: Session, user_id: int, category_id: int = None, title: str = None) -> list[Bill]:
+def get_all_bills(db: Session, user_id: int, category_id: int = None, year: int = None, title: str = None,
+                  min_amount: Decimal = None, max_amount: Decimal = None) -> list[Bill]:
     query = select(Bill).filter(Bill.user_id == user_id)
 
     if category_id:
         query = query.filter(Bill.category_id == category_id)
+    if year:
+        query = query.filter(extract("year", Bill.date) == year)
     if title:
         query = query.filter(Bill.title.ilike(f"%{title}%"))
+    if min_amount:
+        query = query.filter(Bill.amount >= min_amount)
+    if max_amount:
+        query = query.filter(Bill.amount <= max_amount)
     
     bills = db.execute(query)
     return bills.scalars().all()
@@ -40,3 +50,37 @@ def update_bill(db: Session, bill: Bill, updates: dict) -> Bill:
 def delete_bill(db: Session, bill: Bill):
     db.delete(bill)
     db.commit()
+
+# Get bills grouped by category, filtered on a given year
+def get_bills_grouped_by_category(db: Session, user_id: int, year: int):
+    query = (
+        select(
+            Category.name.label("category_name"),
+            Category.color.label("category_color"),
+            func.count(Bill.id).label("nb_bills"),
+            func.sum(Bill.amount).label("total_amount")
+        )
+        .join(Bill, Bill.category_id == Category.id)
+        .filter(Bill.user_id == user_id)
+        .filter(extract("year", Bill.date) == year)
+        .group_by(Category.id, Category.name, Category.color)
+    )
+
+    return db.execute(query)
+
+# Get bills' statistics for a given period
+def get_bills_period_statistics(db: Session, user_id: int, date_from: datetime, date_to: datetime):
+    query = (
+        select(
+            func.count(Bill.id).label("nb_bills"),
+            func.coalesce(func.sum(Bill.amount), 0).label("total_amount")
+        )
+        .filter(Bill.user_id == user_id)
+    )
+    if date_from:
+        query = query.filter(Bill.date >= date_from)
+        
+    if date_to:
+        query = query.filter(Bill.date <= date_to)
+    
+    return db.execute(query)

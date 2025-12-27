@@ -30,3 +30,13 @@ class BillUpdate(BaseModel):
     date: datetime | None = None
     category_id: int | None = None
     comment: str | None = Field(None, max_length=400)
+
+class BillGBCategory(BaseModel):
+    category_name: str
+    category_color: str
+    nb_bills: int
+    total_amount: Decimal
+
+class BillPeriodStats(BaseModel):
+    nb_bills: int
+    total_amount: Decimal

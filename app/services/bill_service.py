@@ -1,10 +1,12 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
 from app.models.bill import Bill
-from app.schemas.bill import BillBase, BillUpdate
+from app.schemas.bill import BillBase, BillUpdate, BillGBCategory, BillPeriodStats
 from app.models.user import User
 from app.crud import bill_db
 from app.services import category_service
+from datetime import datetime, date
+from decimal import Decimal
 
 # Create a new bill
 def create_bill(db: Session, current_user: User, bill: BillBase) -> Bill:
@@ -18,8 +20,9 @@ def create_bill(db: Session, current_user: User, bill: BillBase) -> Bill:
     return bill_db.create_bill(db, bill_to_create)
 
 # Get all bills - filtered by current user
-def get_all_bills(db: Session, current_user: User, category_id: int = None, title: str = None) -> list[Bill]:
-    return bill_db.get_all_bills(db, current_user.id, category_id, title)
+def get_all_bills(db: Session, current_user: User, category_id: int = None, year: int = None, title: str = None,
+                  min_amount: Decimal = None, max_amount: Decimal = None) -> list[Bill]:
+    return bill_db.get_all_bills(db, current_user.id, category_id, year, title, min_amount, max_amount)
 
 # Get an existing bill by its id - filtered by current user
 def get_bill_by_id(db: Session, current_user: User, bill_id: int) -> Bill:
@@ -53,3 +56,40 @@ def delete_bill(db: Session, current_user: User, bill_id: int):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Vous ne pouvez pas supprimer cette facture.")
   
     return bill_db.delete_bill(db, bill)
+
+# Return bills grouped by category for a chosen year
+def get_bills_grouped_by_category(db: Session, current_user: User, year: int = datetime.now().year) -> list[BillGBCategory]:
+    result = bill_db.get_bills_grouped_by_category(db, current_user.id, year)
+    bill_gb_category = list[BillGBCategory]()
+    for row in result:
+        bill_gb_category.append(
+            BillGBCategory(
+                category_name=row.category_name,
+                category_color=row.category_color,
+                nb_bills=row.nb_bills,
+                total_amount=row.total_amount,
+                date_year=year
+            )
+        )
+    return bill_gb_category
+
+#Return bills' statistics for a given period
+def get_bills_period_statistics(db: Session, current_user: User, date_from: str = None, date_to: str = None) -> list[BillPeriodStats]:
+    # Initialize period's datetimes
+    date_from_dt = None
+    date_to_dt = None
+    if date_from:
+        date_from_dt = datetime.strptime(date_from, "%Y-%m-%d")
+    if date_to:
+        date_to_dt = datetime.strptime(date_to, "%Y-%m-%d")
+    
+    result = bill_db.get_bills_period_statistics(db, current_user.id, date_from_dt, date_to_dt)
+    bill_period_stats = list[BillPeriodStats]()
+    for row in result:
+        bill_period_stats.append(
+            BillPeriodStats(
+                nb_bills=row.nb_bills,
+                total_amount=row.total_amount
+            )
+        )
+    return bill_period_stats
