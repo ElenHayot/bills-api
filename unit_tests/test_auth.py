@@ -55,6 +55,31 @@ def test_refresh_user(client):
     assert data["refresh_token"] != None
     assert data["access_token"] != access_token
 
+def test_logout_user(client):
+    # Create a user
+    response = client.post(
+        URL_USERS,
+        json = john_doe
+    )
+    assert response.status_code == 200
+
+    # Login
+    response = client.post(
+        f"{URL_AUTH}/login",
+        headers={"Content-Type": "application/x-www-form-urlencoded"},
+        data=login_john_doe
+    )
+    assert response.status_code == 200
+    refresh_token = response.json()["refresh_token"]
+
+    # Logout
+    response = client.post(
+        f"{URL_AUTH}/logout",
+        headers={"Content-Type": "application/json"},
+        json={"refresh_token": refresh_token}
+    )
+    assert response.status_code == 200
+
 # Test refresh access_token with no refresh_token
 def test_refresh_without_token(client):
     response = client.post(

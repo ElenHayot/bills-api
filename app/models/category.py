@@ -10,7 +10,7 @@ class Category(Base):
     id = Column(Integer, primary_key=True, index=True)  #autoincrement implicite
     name = Column(String(100), nullable=False, index=True)
     color = Column(String(20), nullable=False)
-    user_id = Column(Integer, ForeignKey("users.id", ondelete="RESTRICT"), nullable=False, index=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 

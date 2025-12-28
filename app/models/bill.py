@@ -15,7 +15,7 @@ class Bill(Base):
     comment = Column(String(400))
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
-    user_id = Column(Integer, ForeignKey("users.id", ondelete="RESTRICT"), nullable=False, index=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
 
     # PREVISIONNEL
     # devise/currency = Column(String, nullable=False)   # enum : $, €, ¥, £, ...

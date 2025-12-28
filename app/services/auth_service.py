@@ -13,10 +13,33 @@ from app.models.refresh_token import RefreshToken
 
 # Log-in an existing user
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    # Check is user exists
     user = db.query(User).filter(User.email == form_data.username).first()
-    if not user or not verify_password(form_data.password, user.password_hash):
+    if not user :
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
+    # Check if user is not locked
+    if user.locked_until and user.locked_until > datetime.now():
+        raise HTTPException(
+            status_code=423,
+            detail="Account locked. Try again later."
+        )
+    
+    # If wrong password
+    if not verify_password(form_data.password, user.password_hash):
+        # Lock user for 15 minutes after 5 attempts
+        user.failed_login_attempts += 1
+        if user.failed_login_attempts >= 5:
+            user.locked_until = datetime.now() + timedelta(minutes=15)
+        db.commit() 
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+
+    # If login ok :
+    user.failed_login_attempts = 0
+    user.locked_until = None
+    db.commit()
+
+    # Create tokens
     access = create_access_token({"sub": str(user.id)})
     refresh = create_refresh_token({"sub": str(user.id)})
 
@@ -51,12 +74,13 @@ def refresh_token(payload: RefreshRequest):
     }
 
 # Logout user - delete associated refresh token
-def logout(db: Session, user_id: int, refresh_token: str):
+def logout(db: Session, refresh_token: str):
     token = db.query(RefreshToken).filter(
-        RefreshToken.user_id == user_id,
         RefreshToken.token == refresh_token
     ).first()
 
-    if token:
-        db.delete(token)
-        db.commit()
+    if not token:
+        return
+
+    db.delete(token)
+    db.commit()
