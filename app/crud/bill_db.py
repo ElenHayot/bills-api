@@ -91,4 +91,4 @@ def get_bills_period_statistics(db: Session, user_id: int, date_from: datetime, 
     if date_to:
         query = query.filter(Bill.date <= date_to)
     
-    return db.execute(query)
+    return db.execute(query).one()

@@ -3,7 +3,8 @@ from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.dependencies.auth import get_current_user
 from app.models.user import User
-from app.schemas.bill import BillBase, BillRead, BillUpdate, BillGBCategory, BillPeriodStats
+from app.schemas.bill import BillBase, BillRead, BillUpdate
+from app.schemas.dashboard import DashboardCategoryStats, DashboardGlobalStats
 from app.services import bill_service
 from decimal import Decimal
 
@@ -30,14 +31,14 @@ def get_statistics(db: Session = Depends(get_db), current_user: User = Depends(g
 """
 
 # GET : Get bills' statistics for a given period
-@bill_router.get("/summary/period", response_model=list[BillPeriodStats])
+@bill_router.get("/summary/period", response_model=list[DashboardGlobalStats])
 def get_period_statistics(date_from: str = Query(None, alias="from", description="Ne rien mettre pour obtenir toutes les statistiques"), 
                           date_to: str = Query(None, alias="to", description="Ne rien mettre pour obtenir toutes les statistiques"), 
                           db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     return bill_service.get_bills_period_statistics(db, current_user, date_from, date_to)
 
 # GET : Get bills statistics grouped by category, filtered on the chosen year
-@bill_router.get("/summary/by-category", response_model=list[BillGBCategory])
+@bill_router.get("/summary/by-category", response_model=list[DashboardCategoryStats])
 def get_category_statistics(year: int = Query(None), db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     return bill_service.get_bills_grouped_by_category(db, current_user, year)
 

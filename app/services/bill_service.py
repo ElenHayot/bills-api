@@ -1,7 +1,8 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
 from app.models.bill import Bill
-from app.schemas.bill import BillBase, BillUpdate, BillGBCategory, BillPeriodStats
+from app.schemas.bill import BillBase, BillUpdate
+from app.schemas.dashboard import DashboardCategoryStats, DashboardGlobalStats
 from app.models.user import User
 from app.crud import bill_db
 from app.services import category_service
@@ -64,12 +65,12 @@ def delete_bill(db: Session, current_user: User, bill_id: int):
     return bill_db.delete_bill(db, bill)
 
 # Return bills grouped by category for a chosen year
-def get_bills_grouped_by_category(db: Session, current_user: User, year: int = datetime.now().year) -> list[BillGBCategory]:
+def get_bills_grouped_by_category(db: Session, current_user: User, year: int = datetime.now().year) -> list[DashboardCategoryStats]:
     result = bill_db.get_bills_grouped_by_category(db, current_user.id, year)
-    bill_gb_category = list[BillGBCategory]()
+    bill_gb_category = list[DashboardCategoryStats]()
     for row in result:
         bill_gb_category.append(
-            BillGBCategory(
+            DashboardCategoryStats(
                 category_name=row.category_name,
                 category_color=row.category_color,
                 nb_bills=row.nb_bills,
@@ -80,7 +81,7 @@ def get_bills_grouped_by_category(db: Session, current_user: User, year: int = d
     return bill_gb_category
 
 #Return bills' statistics for a given period
-def get_bills_period_statistics(db: Session, current_user: User, date_from: str = None, date_to: str = None) -> list[BillPeriodStats]:
+def get_bills_period_statistics(db: Session, current_user: User, date_from: str = None, date_to: str = None) -> list[DashboardGlobalStats]:
     # Initialize period's datetimes
     date_from_dt = None
     date_to_dt = None
@@ -90,12 +91,6 @@ def get_bills_period_statistics(db: Session, current_user: User, date_from: str 
         date_to_dt = datetime.strptime(date_to, "%Y-%m-%d")
     
     result = bill_db.get_bills_period_statistics(db, current_user.id, date_from_dt, date_to_dt)
-    bill_period_stats = list[BillPeriodStats]()
-    for row in result:
-        bill_period_stats.append(
-            BillPeriodStats(
-                nb_bills=row.nb_bills,
-                total_amount=row.total_amount
-            )
-        )
+
+    bill_period_stats = DashboardGlobalStats(nb_bills=result.nb_bills, total_amount=result.total_amount)
     return bill_period_stats
