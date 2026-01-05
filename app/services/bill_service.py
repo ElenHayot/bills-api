@@ -71,6 +71,7 @@ def get_bills_grouped_by_category(db: Session, current_user: User, year: int = d
     for row in result:
         bill_gb_category.append(
             DashboardCategoryStats(
+                category_id=row.category_id,
                 category_name=row.category_name,
                 category_color=row.category_color,
                 nb_bills=row.nb_bills,

@@ -63,6 +63,7 @@ def delete_bill(db: Session, bill: Bill):
 def get_bills_grouped_by_category(db: Session, user_id: int, year: int):
     query = (
         select(
+            Category.id.label("category_id"),
             Category.name.label("category_name"),
             Category.color.label("category_color"),
             func.count(Bill.id).label("nb_bills"),

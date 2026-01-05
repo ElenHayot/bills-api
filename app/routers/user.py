@@ -28,14 +28,14 @@ def read( user_email: str, db: Session = Depends(get_db)):
     return user_service.get_user_by_email(db, user_email)
 
 # PUT : Update a user
-@user_router.put("/{user_email}", response_model=UserRead,
+@user_router.put("/{user_email}/", response_model=UserRead,
                       summary="Update current user infos",
                       description="Update current user infos - returns updated data")
 def update(user_email: str, updates: UserUpdate, current_user: User = Depends(get_current_user),  db: Session = Depends(get_db)):
     return user_service.update_user(db, current_user, updates, user_email)
 
 # DELETE : Delete a user
-@user_router.delete("/{user_email}",
+@user_router.delete("/{user_email}/",
                       summary="Delete account",
                       description="Delete current user's account - returns nothing")
 def delete(user_email: str, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):

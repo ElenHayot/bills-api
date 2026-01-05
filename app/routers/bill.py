@@ -34,7 +34,7 @@ def get_statistics(db: Session = Depends(get_db), current_user: User = Depends(g
 """
 
 # GET : Get bills' statistics for a given period
-@bill_router.get("/summary/period", response_model=list[DashboardGlobalStats],
+@bill_router.get("/summary/period/", response_model=list[DashboardGlobalStats],
                     summary="Bills period data for the current user",
                     description="Returns bills' statistics for a given period")
 def get_period_statistics(date_from: str = Query(None, alias="from", description="Ne rien mettre pour obtenir toutes les statistiques"), 
@@ -43,14 +43,14 @@ def get_period_statistics(date_from: str = Query(None, alias="from", description
     return bill_service.get_bills_period_statistics(db, current_user, date_from, date_to)
 
 # GET : Get bills statistics grouped by category, filtered on the chosen year
-@bill_router.get("/summary/by-category", response_model=list[DashboardCategoryStats],
+@bill_router.get("/summary/by-category/", response_model=list[DashboardCategoryStats],
                     summary="Bills per category data for the current user",
                     description="Returns bills' statistics for each category")
 def get_category_statistics(year: int = Query(None), db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     return bill_service.get_bills_grouped_by_category(db, current_user, year)
 
 # GET : Get one bill by its ID, filtered by current user
-@bill_router.get("/{bill_id}", response_model=BillRead,
+@bill_router.get("/{bill_id}/", response_model=BillRead,
                     summary="Bill data for a given bill ID")
 def read(bill_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     return bill_service.get_bill_by_id(db, current_user, bill_id)
