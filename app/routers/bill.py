@@ -56,14 +56,14 @@ def read(bill_id: int, db: Session = Depends(get_db), current_user: User = Depen
     return bill_service.get_bill_by_id(db, current_user, bill_id)
 
 # PUT : Update a current user's bill
-@bill_router.put("/{bill_id}", response_model=BillRead,
+@bill_router.put("/{bill_id}/", response_model=BillRead,
                     summary="Update a bill",
                     description="Update an existing bill - returns the updated data")
 def update(bill_id: int, updates: BillUpdate, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     return bill_service.update_bill(db, current_user, bill_id, updates)
 
 # DELETE : Delete a bill from the current user
-@bill_router.delete("/{bill_id}",
+@bill_router.delete("/{bill_id}/",
                     summary="Delete a bill",
                     description="Delete an existing bill - returns nothing")
 def delete(bill_id: int, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):

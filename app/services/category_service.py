@@ -4,6 +4,7 @@ from app.models.category import Category
 from app.schemas.category import CategoryBase, CategoryUpdate
 from app.models.user import User
 from app.crud import category_db
+from app.crud import bill_db
 
 # Create a new category
 def create_category(db: Session, current_user: User, category: CategoryBase) -> Category:
@@ -44,7 +45,13 @@ def update_category(db: Session, current_user: User, name: str, updates: Categor
     if current_user.id != category.user_id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Vous ne pouvez pas modifier cette catégorie.")
     
+    if updates.name:
+        existing_cat = category_db.get_category_by_name(db, current_user.id, updates.name)
+        if existing_cat and existing_cat.id != category.id:
+            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Il existe déjà une catégorie avec ce nom")
+   
     update_data = updates.model_dump(exclude_unset=True)
+     
     return category_db.update_category(db, category, update_data)
 
 # Delete an existing category
@@ -54,6 +61,11 @@ def delete_category(db: Session, current_user: User, name: str):
     # Check if user can delete this category
     if current_user.id != category.user_id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Vous ne pouvez pas supprimer cette catégorie.")
+
+    # Check if category is unused
+    billsUsingCat = bill_db.get_all_bills(db, current_user.id, category_id=category.id)
+    if any(billsUsingCat):
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Cette catégorie est utilisée, vous ne pouvez la supprimer")
 
     return category_db.delete_category(db, category)
 
