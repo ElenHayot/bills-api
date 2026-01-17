@@ -8,7 +8,9 @@ class BillBase(BaseModel):
     amount: Decimal
     date: datetime | None = None
     category_id: int
-    comment: str | None = Field(None, max_length=400)
+    provider_id: int | None = None
+    provider_name: str | None = Field("", max_length=150)
+    comment: str | None = Field("", max_length=400)
 
     @field_validator("amount", mode="before")
     @classmethod
@@ -30,4 +32,6 @@ class BillUpdate(BaseModel):
     date: datetime | None = None
     category_id: int | None = None
     comment: str | None = Field(None, max_length=400)
+    provider_id: int | None = None
+    provider_name: str | None = Field(None, max_length=150)
 

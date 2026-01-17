@@ -11,6 +11,8 @@ class Bill(Base):
     title = Column(String(150), nullable=False, index=True)
     amount = Column(Numeric(10,2), nullable=False)
     category_id = Column(Integer, ForeignKey("categories.id", ondelete="RESTRICT"), nullable=False, index=True)
+    provider_id = Column(Integer, ForeignKey("providers.id", ondelete="SET NULL"), nullable=True, index=True)
+    provider_name = Column(String(150), nullable = True)
     date = Column(DateTime(timezone=True), server_default=func.now())
     comment = Column(String(400))
     created_at = Column(DateTime(timezone=True), server_default=func.now())

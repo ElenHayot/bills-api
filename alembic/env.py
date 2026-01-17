@@ -10,6 +10,7 @@ from app.models.user import User
 from app.models.bill import Bill
 from app.models.category import Category
 from app.models.refresh_token import RefreshToken
+from app.models.provider import Provider
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

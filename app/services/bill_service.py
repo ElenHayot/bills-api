@@ -5,7 +5,7 @@ from app.schemas.bill import BillBase, BillUpdate
 from app.schemas.dashboard import DashboardCategoryStats, DashboardGlobalStats
 from app.models.user import User
 from app.crud import bill_db
-from app.services import category_service
+from app.services import category_service, provider_service
 from datetime import datetime, date
 from decimal import Decimal
 
@@ -13,10 +13,19 @@ from decimal import Decimal
 def create_bill(db: Session, current_user: User, bill: BillBase) -> Bill:
     # Verify existing associated category - exception managed in service function
     cat = category_service.get_category_by_id(db, current_user, bill.category_id)
-    
+
+    loc_provider_name = ""
+    if bill.provider_id:
+        # Verify existing associated provider - exception managed in service function
+        provider = provider_service.get_provider_by_id(db, current_user, bill.provider_id)
+        loc_provider_name = provider.name
+    else :
+        loc_provider_name = bill.provider_name
+
     bill_to_create = Bill(
-        **bill.model_dump(),
-        user_id = current_user.id
+        **bill.model_dump(exclude={'provider_name'}),
+        user_id = current_user.id,
+        provider_name = loc_provider_name
     )
     return bill_db.create_bill(db, bill_to_create)
 
@@ -51,7 +60,15 @@ def update_bill(db: Session, current_user: User, bill_id: int, updates: BillUpda
     if updates.category_id:
         cat = category_service.get_category_by_id(db, current_user, updates.category_id)
 
-    update_data = updates.model_dump(exclude_unset=True)
+    update_data = updates.model_dump(exclude_unset=True, exclude={'provider_name'})
+    if updates.provider_id or updates.provider_name:
+        if updates.provider_id:
+            # Check the provider exists and coordinate the provider_name
+            provider = provider_service.get_provider_by_id(db, current_user, updates.provider_id)
+            update_data["provider_name"] = provider.name
+        else:
+            update_data["provider_name"] = updates.provider_name
+
     return bill_db.update_bill(db, bill, update_data)
 
 # Delete an existing bill

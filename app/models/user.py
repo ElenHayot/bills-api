@@ -19,3 +19,4 @@ class User(Base):
     bills = relationship("Bill", back_populates="user", cascade="all, delete-orphan")
     categories = relationship("Category", back_populates="user", cascade="all, delete-orphan")
     refresh_tokens = relationship("RefreshToken", back_populates="user", cascade="all, delete-orphan")
+    providers = relationship("Provider", back_populates="user", cascade="all, delete-orphan")
