@@ -21,22 +21,22 @@ def create(cat_data: CategoryBase, current_user: User = Depends(get_current_user
 def read_all(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     return category_service.get_all_categories(db, current_user)
 
-# GET : Get one category by its name, filtered by current user
-@category_router.get("/{cat_name}/", response_model=CategoryRead,
-                    summary="Category data for a given category name")
-def read(cat_name: str, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    return category_service.get_category_by_name(db, current_user, cat_name)
+# GET : Get one category by its id, filtered by current user
+@category_router.get("/{cat_id}/", response_model=CategoryRead,
+                    summary="Category data for a given category id")
+def read(cat_id: int, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    return category_service.get_category_by_id(db, current_user, cat_id)
 
 # PUT : Update a current user's category
-@category_router.put("/{cat_name}/", response_model=CategoryRead,
+@category_router.put("/{cat_id}/", response_model=CategoryRead,
                     summary="Update a category",
                     description="Update an existing category - returns the updated data")
-def update(cat_name: str, updates: CategoryUpdate, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    return category_service.update_category(db, current_user, cat_name, updates)
+def update(cat_id: int, updates: CategoryUpdate, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    return category_service.update_category(db, current_user, cat_id, updates)
 
 # DELETE : Delete a category from the current user
-@category_router.delete("/{cat_name}/",
+@category_router.delete("/{cat_id}/",
                     summary="Delete a category",
                     description="Delete an existing category - returns nothing")
-def delete(cat_name: str, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    return category_service.delete_category(db, current_user, cat_name)
+def delete(cat_id: int, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    return category_service.delete_category(db, current_user, cat_id)

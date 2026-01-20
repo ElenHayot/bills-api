@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.models.user import User
 from app.schemas.user import UserCreate, UserRead, UserUpdate
+from app.schemas.auth import RegisterResponse
 from app.dependencies.auth import get_current_user
 from app.services import user_service
 
@@ -13,6 +14,12 @@ user_router = APIRouter(tags=["Users"])
                       summary="Create a user account")
 def create(user_data: UserCreate, db: Session = Depends(get_db)):
     return user_service.create_user(db, user_data)
+
+# POST : Register a user and return tokens
+@user_router.post("/register", response_model=RegisterResponse,
+                      summary="Register a new user and return access/refresh tokens")
+def register(user_data: UserCreate, db: Session = Depends(get_db)):
+    return user_service.register_user(db, user_data)
 
 # GET : Get all users - dev function
 @user_router.get("/", response_model=list[UserRead],

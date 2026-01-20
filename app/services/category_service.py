@@ -38,8 +38,8 @@ def get_category_by_name(db: Session, current_user: User, name: str) -> Category
     return category
 
 # Update an existing category
-def update_category(db: Session, current_user: User, name: str, updates: CategoryUpdate) -> Category:
-    category = get_category_by_name(db, current_user, name)
+def update_category(db: Session, current_user: User, cat_id: int, updates: CategoryUpdate) -> Category:
+    category = get_category_by_id(db, current_user, cat_id)
     
     # Check if user can update this category
     if current_user.id != category.user_id:
@@ -55,8 +55,8 @@ def update_category(db: Session, current_user: User, name: str, updates: Categor
     return category_db.update_category(db, category, update_data)
 
 # Delete an existing category
-def delete_category(db: Session, current_user: User, name: str):
-    category = get_category_by_name(db, current_user, name)
+def delete_category(db: Session, current_user: User, cat_id: int):
+    category = get_category_by_id(db, current_user, cat_id)
     
     # Check if user can delete this category
     if current_user.id != category.user_id:

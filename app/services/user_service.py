@@ -1,10 +1,12 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
+from datetime import datetime, timedelta
 
 from app.crud import user_db
 from app.schemas.user import UserCreate, UserUpdate
-from app.core.security import hash_password
+from app.core.security import hash_password, create_access_token, create_refresh_token, REFRESH_TOKEN_EXPIRE_DAYS
 from app.models.user import User
+from app.models.refresh_token import RefreshToken
 from app.services import category_service
 
 # Create a new user
@@ -28,6 +30,31 @@ def create_user(db: Session, user: UserCreate) -> User:
     category_service.create_default(db, created_user)
 
     return created_user
+
+# Register a new user and return tokens
+def register_user(db: Session, user: UserCreate):
+    # Create the user
+    created_user = create_user(db, user)
+    
+    # Create tokens
+    access = create_access_token({"sub": str(created_user.id)})
+    refresh = create_refresh_token({"sub": str(created_user.id)})
+
+    # Add refresh token to db
+    refresh_token = RefreshToken(
+        user_id = created_user.id,
+        token = refresh,
+        expires_at = datetime.now() + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
+    )
+    db.add(refresh_token)
+    db.commit()
+    db.refresh(refresh_token)
+
+    return {
+        "access_token": access,
+        "refresh_token": refresh,
+        "user": created_user
+    }
 
 # Get all users
 def get_all_users(db: Session) -> list[User]:
