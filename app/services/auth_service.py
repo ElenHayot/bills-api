@@ -1,7 +1,7 @@
 from fastapi import  Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
-from app.schemas.auth import  RefreshRequest
+from app.schemas.auth import  RefreshRequest, RegisterResponse
 from jose import jwt, JWTError
 from datetime import datetime, timedelta
 
@@ -10,6 +10,7 @@ from app.core.database import get_db
 from app.core.security import create_access_token, create_refresh_token, verify_password, REFRESH_TOKEN_EXPIRE_DAYS
 from app.models.user import User
 from app.models.refresh_token import RefreshToken
+from app.schemas.user import UserRead
 
 # Log-in an existing user
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
@@ -53,10 +54,13 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
     db.commit()
     db.refresh(refresh_token)
 
-    return {
-        "access_token": access,
-        "refresh_token": refresh,
-    }
+    response = RegisterResponse(
+        access_token=access,
+        refresh_token=refresh,
+        token_type="bearer",
+        current_user= UserRead.model_validate(user),
+    )
+    return response
 
 # Refresh access_token if refresh_token is valid
 def refresh_token(payload: RefreshRequest):

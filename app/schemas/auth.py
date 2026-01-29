@@ -16,5 +16,5 @@ class RefreshRequest(BaseModel):
 class RegisterResponse(BaseModel):
     access_token: str
     refresh_token: str
-    user: UserRead
+    current_user: UserRead
     token_type: str = "bearer"

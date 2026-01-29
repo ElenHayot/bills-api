@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, ConfigDict
+from pydantic import BaseModel, EmailStr, ConfigDict, Field
 from datetime import datetime
 
 # User common scheme
@@ -7,7 +7,7 @@ class UserBase(BaseModel):
 
 # Scheme to create user or update user's password
 class UserCreate(UserBase):
-    password: str
+    password: str = Field(min_length=8, strip_whitespace=True)
 
 # User reading scheme - get all non-sensitive user infos
 class UserRead(UserBase):
@@ -20,4 +20,4 @@ class UserRead(UserBase):
 # User updating scheme
 class UserUpdate(UserBase):
     email: EmailStr | None = None
-    password: str | None = None
+    password: str | None = Field(None, min_length=8, strip_whitespace=True)
