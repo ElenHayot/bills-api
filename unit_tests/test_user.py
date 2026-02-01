@@ -13,19 +13,66 @@ def test_create_user(client):
     user = response.json()
     assert user["email"] == john_doe["email"]
 
-    # Verify if default category is created
-    # Login
+def test_register_user(client):
+    # Register user (should return tokens and current_user)
     response = client.post(
-        f"{URL_AUTH}/login", 
-        headers={"Content-Type": "application/x-www-form-urlencoded"},
-        data=login_john_doe
+        f"{URL_USERS}/register/",
+        headers={"Content-Type":"application/json"},
+        json=john_doe
     )
     assert response.status_code == 200
-    access_token = response.json()["access_token"]
+    data = response.json()
+    assert data["access_token"] is not None
+    assert data["refresh_token"] is not None
+    assert data["current_user"]["email"] == john_doe["email"]
 
-    # Check user's categories - should have one default categorie
+    # Verify if default category is created
+    access_token = data["access_token"]
+    
+    # Check user's categories - should have one default category
     response = client.get(URL_CATEGORIES, headers={"Authorization":f"bearer {access_token}"})
     assert response.status_code == 200
     cat = response.json()
     assert len(cat) == 1
+
+def test_get_user_by_email(client):
+    # Create user first
+    response = client.post(URL_USERS, json=john_doe)
+    assert response.status_code == 200
+    
+    # Get user by email
+    response = client.get(f"{URL_USERS}/{john_doe['email']}/")
+    assert response.status_code == 200
+    user = response.json()
+    assert user["email"] == john_doe["email"]
+
+def test_update_user(client):
+    # Create and login user
+    response = client.post(f"{URL_USERS}/register/", json=john_doe)
+    assert response.status_code == 200
+    access_token = response.json()["access_token"]
+    
+    # Update user
+    update_data = {"email": "updated@example.com"}
+    response = client.put(
+        f"{URL_USERS}/{john_doe['email']}/",
+        headers={"Authorization": f"bearer {access_token}"},
+        json=update_data
+    )
+    assert response.status_code == 200
+    updated_user = response.json()
+    assert updated_user["email"] == "updated@example.com"
+
+def test_delete_user(client):
+    # Create and login user
+    response = client.post(f"{URL_USERS}/register/", json=john_doe)
+    assert response.status_code == 200
+    access_token = response.json()["access_token"]
+    
+    # Delete user
+    response = client.delete(
+        f"{URL_USERS}/{john_doe['email']}/",
+        headers={"Authorization": f"bearer {access_token}"}
+    )
+    assert response.status_code == 200
 

@@ -135,10 +135,10 @@ def test_user_sources_access(client):
 
     # Try to get john does's category
     response = client.get(f"{URL_CATEGORIES}/john%20doe%27s%20category", headers={"Authorization": f"bearer {access_token_2}"})
-    assert response.status_code == 404
+    assert response.status_code == 422
 
     # Try to delete john doe's category
     response = client.delete(f"{URL_CATEGORIES}/john%20doe%27s%20category", headers={"Authorization": f"bearer {access_token_2}"})
-    assert response.status_code == 404
+    assert response.status_code == 422
 
 

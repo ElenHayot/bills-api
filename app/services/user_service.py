@@ -53,7 +53,7 @@ def register_user(db: Session, user: UserCreate):
     return {
         "access_token": access,
         "refresh_token": refresh,
-        "user": created_user
+        "current_user": created_user
     }
 
 # Get all users
