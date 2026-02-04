@@ -35,13 +35,14 @@ def test_register_user(client):
     cat = response.json()
     assert len(cat) == 1
 
-def test_get_user_by_email(client):
+def test_get_user_by_id(client):
     # Create user first
     response = client.post(URL_USERS, json=john_doe)
     assert response.status_code == 200
+    user_id = response.json()["id"]
     
-    # Get user by email
-    response = client.get(f"{URL_USERS}/{john_doe['email']}/")
+    # Get user by id
+    response = client.get(f"{URL_USERS}/{user_id}/")
     assert response.status_code == 200
     user = response.json()
     assert user["email"] == john_doe["email"]
@@ -51,11 +52,12 @@ def test_update_user(client):
     response = client.post(f"{URL_USERS}/register/", json=john_doe)
     assert response.status_code == 200
     access_token = response.json()["access_token"]
+    user_id = response.json()["current_user"]["id"]
     
     # Update user
     update_data = {"email": "updated@example.com"}
     response = client.put(
-        f"{URL_USERS}/{john_doe['email']}/",
+        f"{URL_USERS}/{user_id}/",
         headers={"Authorization": f"bearer {access_token}"},
         json=update_data
     )
@@ -68,10 +70,11 @@ def test_delete_user(client):
     response = client.post(f"{URL_USERS}/register/", json=john_doe)
     assert response.status_code == 200
     access_token = response.json()["access_token"]
+    user_id = response.json()["current_user"]["id"]
     
     # Delete user
     response = client.delete(
-        f"{URL_USERS}/{john_doe['email']}/",
+        f"{URL_USERS}/{user_id}/",
         headers={"Authorization": f"bearer {access_token}"}
     )
     assert response.status_code == 200

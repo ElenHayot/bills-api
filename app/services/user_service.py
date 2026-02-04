@@ -75,12 +75,12 @@ def get_user_by_email(db: Session, email: str) -> User:
     return user
 
 # Update the logged user
-def update_user(db: Session, current_user: User, updates: UserUpdate, user_email: str) -> User:
+def update_user(db: Session, current_user: User, updates: UserUpdate, user_id: int) -> User:
     if not current_user :
         raise HTTPException(status_code=401, detail=f"Il faut être connecté pour pouvoir exécuter cette opération")
     
     # Verify if can update
-    if current_user.email != user_email:
+    if current_user.id != user_id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f"Vous ne pouvez pas modifier cet utilisateur.")
     
     # Verify email validity if changed
@@ -97,11 +97,11 @@ def update_user(db: Session, current_user: User, updates: UserUpdate, user_email
     return user_db.update_user(db, current_user, update_data)
 
 # Delete an account
-def delete_user(db: Session, current_user: User, user_email):
+def delete_user(db: Session, current_user: User, user_id: int):
     if not current_user:
         raise HTTPException(status_code=401, detail=f"Il faut être connecté pour pouvoir exécuter cette opération")
     
-    user = get_user_by_email(db, user_email)
+    user = get_user_by_id(db, user_id)
     if not user:
         raise HTTPException(status_code=404, detail=f"Utilisateur inconnu")
     
