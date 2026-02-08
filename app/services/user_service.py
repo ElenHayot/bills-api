@@ -8,13 +8,14 @@ from app.core.security import hash_password, create_access_token, create_refresh
 from app.models.user import User
 from app.models.refresh_token import RefreshToken
 from app.services import category_service
+from app.core.errors import UnauthorizedError, ForbiddenError, UserNotFoundError, EmailAlreadyExistsError
 
 # Create a new user
 def create_user(db: Session, user: UserCreate) -> User:
     # Check email unicity
     existing_user = user_db.get_user_by_email(db, user.email)
     if existing_user:
-        raise HTTPException(status_code= status.HTTP_409_CONFLICT, detail="Email déjà utilisé")
+        raise EmailAlreadyExistsError()
     
     # Password hash before creating
     hashed_password = hash_password(user.password)
@@ -64,34 +65,37 @@ def get_all_users(db: Session) -> list[User]:
 def get_user_by_id(db: Session, user_id: int) -> User:
     user = user_db.get_user_by_id(db, user_id)
     if not user:
-        raise HTTPException(status_code=404, detail=f"Utilisateur inconnu")
+        raise UserNotFoundError()
     return user
 
 # Find a user by its email
 def get_user_by_email(db: Session, email: str) -> User:
     user = user_db.get_user_by_email(db, email)
     if not user:
-        raise HTTPException(status_code=404, detail=f"Utilisateur inconnu")
+        raise UserNotFoundError()
     return user
 
 # Update the logged user
 def update_user(db: Session, current_user: User, updates: UserUpdate, user_id: int) -> User:
     if not current_user :
-        raise HTTPException(status_code=401, detail=f"Il faut être connecté pour pouvoir exécuter cette opération")
+        raise UnauthorizedError("Vous devez être connecté pour cette opération")
+        #raise HTTPException(status_code=401, detail=f"Il faut être connecté pour pouvoir exécuter cette opération")
     
     # Verify if can update
     if current_user.id != user_id:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f"Vous ne pouvez pas modifier cet utilisateur.")
+        raise ForbiddenError(resource='user', message="Vous ne pouvez pas modifier cet utilisateur")
+        #raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f"Vous ne pouvez pas modifier cet utilisateur.")
     
     # Verify email validity if changed
     if updates.email:
         user = user_db.get_user_by_email(db, updates.email)  
         if user:
-            raise HTTPException(status_code=404, detail=f"Erreur : email déjà utilisé")
+            raise EmailAlreadyExistsError(email=updates.email)
+            #raise HTTPException(status_code=404, detail=f"Erreur : email déjà utilisé")
 
     # Generate update datas
     update_data = updates.model_dump(exclude_unset=True, exclude={'password'})
-    if updates.password:
+    if updates.password and updates.password != "":
         update_data['password'] = hash_password(updates.password)
 
     return user_db.update_user(db, current_user, update_data)
@@ -99,14 +103,14 @@ def update_user(db: Session, current_user: User, updates: UserUpdate, user_id: i
 # Delete an account
 def delete_user(db: Session, current_user: User, user_id: int):
     if not current_user:
-        raise HTTPException(status_code=401, detail=f"Il faut être connecté pour pouvoir exécuter cette opération")
+        raise UnauthorizedError(message=f"Il faut être connecté pour pouvoir exécuter cette opération")
     
     user = get_user_by_id(db, user_id)
     if not user:
-        raise HTTPException(status_code=404, detail=f"Utilisateur inconnu")
+        raise UserNotFoundError()
     
      # Verify if the user can update
     if current_user.id != user.id:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f"Vous ne pouvez pas supprimer cet utilisateur.")
+        raise ForbiddenError(message=f"Vous ne pouvez pas supprimer cet utilisateur.")
     
     return user_db.delete_user(db, user)

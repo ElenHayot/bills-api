@@ -14,9 +14,6 @@ auth_router = APIRouter(tags=["Auth"])
                     summary="Log-in user",
                     description="Returns access token and refresh token for the user")
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-    print(f"form_data.client_id: {form_data.client_id}")
-    print(f"form_data.username: {form_data.username}")
-    print(f"form_data.password: {form_data.password}")
     return auth_service.login(form_data, db)
 
 # POST - Refresh endpoint

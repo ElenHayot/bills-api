@@ -40,6 +40,7 @@ def read(user_id: int, db: Session = Depends(get_db)):
                       summary="Update current user infos",
                       description="Update current user infos - returns updated data")
 def update(user_id: int, updates: UserUpdate, current_user: User = Depends(get_current_user),  db: Session = Depends(get_db)):
+    print(f"in user router, on update, user_id: {user_id}, updates: {updates}, current_user: {current_user}")
     return user_service.update_user(db, current_user, updates, user_id)
 
 # DELETE : Delete a user

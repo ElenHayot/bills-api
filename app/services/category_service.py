@@ -5,13 +5,14 @@ from app.schemas.category import CategoryBase, CategoryUpdate
 from app.models.user import User
 from app.crud import category_db
 from app.crud import bill_db
+from app.core.errors import UnauthorizedError, ForbiddenError, ResourceNotFoundError, AlreadyExistsError
 
 # Create a new category
 def create_category(db: Session, current_user: User, category: CategoryBase) -> Category:
     # Check name unicity
     existing_cat = category_db.get_category_by_name(db, current_user.id, category.name)
     if existing_cat:
-        raise HTTPException(status_code= status.HTTP_409_CONFLICT, detail="Nom de catégorie déjà utilisé")
+        raise AlreadyExistsError(message="Nom de catégorie déjà utilisé")
     category_to_create = Category(
         **category.model_dump(),
         user_id = current_user.id
@@ -26,7 +27,7 @@ def get_all_categories(db: Session, current_user: User) -> list[Category]:
 def get_category_by_id(db: Session, current_user: User, cat_id: int) -> Category:
     category = category_db.get_category_by_id(db, current_user.id, cat_id)
     if not category:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Catégorie {cat_id} inconnue")
+        raise ResourceNotFoundError(message=f"Catégorie {cat_id} inconnue")
     
     return category
 
@@ -34,7 +35,7 @@ def get_category_by_id(db: Session, current_user: User, cat_id: int) -> Category
 def get_category_by_name(db: Session, current_user: User, name: str) -> Category:
     category = category_db.get_category_by_name(db, current_user.id, name)
     if not category:
-        raise HTTPException(status_code=404, detail="Catégorie inconnue")
+        raise ResourceNotFoundError(message="Catégorie '{name}' inconnue")
     return category
 
 # Update an existing category
@@ -43,12 +44,12 @@ def update_category(db: Session, current_user: User, cat_id: int, updates: Categ
     
     # Check if user can update this category
     if current_user.id != category.user_id:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Vous ne pouvez pas modifier cette catégorie.")
+        raise ForbiddenError(message="Vous ne pouvez pas modifier cette catégorie.")
     
     if updates.name:
         existing_cat = category_db.get_category_by_name(db, current_user.id, updates.name)
         if existing_cat and existing_cat.id != category.id:
-            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Il existe déjà une catégorie avec ce nom")
+            raise AlreadyExistsError(message="Il existe déjà une catégorie avec ce nom")
    
     update_data = updates.model_dump(exclude_unset=True)
      
@@ -60,12 +61,12 @@ def delete_category(db: Session, current_user: User, cat_id: int):
     
     # Check if user can delete this category
     if current_user.id != category.user_id:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Vous ne pouvez pas supprimer cette catégorie.")
+        raise ForbiddenError(message="Vous ne pouvez pas supprimer cette catégorie.")
 
     # Check if category is unused
     billsUsingCat = bill_db.get_all_bills(db, current_user.id, category_id=category.id)
     if any(billsUsingCat):
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Cette catégorie est utilisée, vous ne pouvez la supprimer")
+        raise AlreadyExistsError(message="Cette catégorie est utilisée, vous ne pouvez la supprimer")
 
     return category_db.delete_category(db, category)
 

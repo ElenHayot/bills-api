@@ -8,6 +8,7 @@ from app.crud import bill_db
 from app.services import category_service, provider_service
 from datetime import datetime, date
 from decimal import Decimal
+from app.core.errors import UnauthorizedError, ForbiddenError, ResourceNotFoundError
 
 # Create a new bill
 def create_bill(db: Session, current_user: User, bill: BillBase) -> Bill:
@@ -44,7 +45,7 @@ def get_all_bills(db: Session, current_user: User,
 def get_bill_by_id(db: Session, current_user: User, bill_id: int) -> Bill:
     bill = bill_db.get_bill_by_id(db, current_user.id, bill_id)
     if not bill:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Facture inconnue")
+        raise ResourceNotFoundError(messagel=f"Facture {bill_id} inconnue")
     
     return bill
 
@@ -54,7 +55,7 @@ def update_bill(db: Session, current_user: User, bill_id: int, updates: BillUpda
 
     # Check if user can update this bill
     if current_user.id != bill.user_id:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Vous ne pouvez pas modifier cette facture.")
+        raise ForbiddenError(message="Vous ne pouvez pas modifier cette facture.")
   
     # If category changed - verify it exists. Exception managed in service function:
     if updates.category_id:
@@ -77,7 +78,7 @@ def delete_bill(db: Session, current_user: User, bill_id: int):
     
     # Check if user can delete this bill
     if current_user.id != bill.user_id:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Vous ne pouvez pas supprimer cette facture.")
+        raise ForbiddenError(message="Vous ne pouvez pas supprimer cette facture.")
   
     return bill_db.delete_bill(db, bill)
 

@@ -11,29 +11,29 @@ from app.core.security import create_access_token, create_refresh_token, verify_
 from app.models.user import User
 from app.models.refresh_token import RefreshToken
 from app.schemas.user import UserRead
+from app.core.errors import UnauthorizedError, AccountLockedError
 
 # Log-in an existing user
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     # Check is user exists
     user = db.query(User).filter(User.email == form_data.username).first()
     if not user :
-        raise HTTPException(status_code=401, detail="Invalid credentials")
+        raise UnauthorizedError(message="Invalid credentials")
 
     # Check if user is not locked
     if user.locked_until and user.locked_until > datetime.now():
-        raise HTTPException(
-            status_code=423,
-            detail="Account locked. Try again later."
-        )
+        raise AccountLockedError()
     
     # If wrong password
     if not verify_password(form_data.password, user.password_hash):
         # Lock user for 15 minutes after 5 attempts
         user.failed_login_attempts += 1
         if user.failed_login_attempts >= 5:
-            user.locked_until = datetime.now() + timedelta(minutes=15)
+            timeLock = 15
+            user.locked_until = datetime.now() + timedelta(minutes=timeLock)
+            raise AccountLockedError()
         db.commit() 
-        raise HTTPException(status_code=401, detail="Invalid credentials")
+        raise UnauthorizedError(message="Invalid credentials")
 
     # If login ok :
     user.failed_login_attempts = 0
@@ -68,9 +68,9 @@ def refresh_token(payload: RefreshRequest):
         decoded = jwt.decode(payload.refresh_token, SECRET_KEY, algorithms=[ALGORITHM])
         user_id = decoded.get("sub")
         if not user_id:
-            raise HTTPException(status_code=401)
+            raise UnauthorizedError()
     except JWTError:
-        raise HTTPException(status_code=401, detail="Invalid refresh token")
+        raise UnauthorizedError(message="Invalid refresh token")
 
     return {
         "access_token": create_access_token({"sub": user_id}),
