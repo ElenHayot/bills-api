@@ -5,7 +5,7 @@ from app.schemas.category import CategoryBase, CategoryUpdate
 from app.models.user import User
 from app.crud import category_db
 from app.crud import bill_db
-from app.core.errors import UnauthorizedError, ForbiddenError, ResourceNotFoundError, AlreadyExistsError
+from app.core.errors import UnauthorizedError, ForbiddenError, ResourceNotFoundError, AlreadyExistsError, DeleteConflictError
 
 # Create a new category
 def create_category(db: Session, current_user: User, category: CategoryBase) -> Category:
@@ -66,7 +66,7 @@ def delete_category(db: Session, current_user: User, cat_id: int):
     # Check if category is unused
     billsUsingCat = bill_db.get_all_bills(db, current_user.id, category_id=category.id)
     if any(billsUsingCat):
-        raise AlreadyExistsError(message="Cette catégorie est utilisée, vous ne pouvez la supprimer")
+        raise DeleteConflictError(message="Cette catégorie est utilisée, vous ne pouvez la supprimer")
 
     return category_db.delete_category(db, category)
 

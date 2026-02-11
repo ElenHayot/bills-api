@@ -21,6 +21,7 @@ class ErrorCode(str, Enum):
     RESOURCE_NOT_FOUND = "RESOURCE_NOT_FOUND"
     ALREADY_EXISTS = "ALREADY_EXISTS"
     EMAIL_ALREADY_EXISTS = "EMAIL_ALREADY_EXISTS"
+    DELETE_CONFLICT = "DELETE_CONFLICT"
     
     # Server
     INTERNAL_ERROR = "INTERNAL_ERROR"
@@ -43,6 +44,14 @@ class AppException(HTTPException):
         super().__init__(status_code=status_code, detail=detail)
 
 # Specific exceptions
+class InvalidCredentialsError(AppException):
+    def __init__(self):
+        super().__init__(
+            error_code=ErrorCode.INVALID_CREDENTIALS,
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            params={"message": "Email ou mot de passe invalide"}
+        )
+
 class UnauthorizedError(AppException):
     def __init__(self, message: str = "Authentification requise"):
         super().__init__(
@@ -106,6 +115,16 @@ class AlreadyExistsError(AppException):
     def __init__(self, message: str = "Cette ressource existe déjà"):
         super().__init__(
             error_code = ErrorCode.ALREADY_EXISTS,
+            status_code = status.HTTP_409_CONFLICT,
+            params = {
+                "message": message
+            }
+        )
+
+class DeleteConflictError(AppException):
+    def __init__(self, message: str = "Cette ressource est utilisée, vous ne pouvez la supprimer"):
+        super().__init__(
+            error_code = ErrorCode.DELETE_CONFLICT,
             status_code = status.HTTP_409_CONFLICT,
             params = {
                 "message": message

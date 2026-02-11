@@ -11,14 +11,14 @@ from app.core.security import create_access_token, create_refresh_token, verify_
 from app.models.user import User
 from app.models.refresh_token import RefreshToken
 from app.schemas.user import UserRead
-from app.core.errors import UnauthorizedError, AccountLockedError
+from app.core.errors import InvalidCredentialsError, UnauthorizedError, AccountLockedError
 
 # Log-in an existing user
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     # Check is user exists
     user = db.query(User).filter(User.email == form_data.username).first()
     if not user :
-        raise UnauthorizedError(message="Invalid credentials")
+        raise InvalidCredentialsError()
 
     # Check if user is not locked
     if user.locked_until and user.locked_until > datetime.now():
@@ -33,7 +33,7 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
             user.locked_until = datetime.now() + timedelta(minutes=timeLock)
             raise AccountLockedError()
         db.commit() 
-        raise UnauthorizedError(message="Invalid credentials")
+        raise InvalidCredentialsError()
 
     # If login ok :
     user.failed_login_attempts = 0
