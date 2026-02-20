@@ -7,7 +7,7 @@ def get_all_providers(db: Session, user_id: int, name: str = "", limit: int = No
     query = select(Provider).order_by(Provider.name.asc())
     query = query.where(Provider.user_id == user_id)
 
-    if name:
+    if name and name != "":
         query = query.where(Provider.name.ilike(f"%{name}%"))
 
     if limit:
