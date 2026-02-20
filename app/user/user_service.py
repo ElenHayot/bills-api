@@ -2,12 +2,12 @@ from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
 from datetime import datetime, timedelta
 
-from app.crud import user_db
-from app.schemas.user import UserCreate, UserUpdate
+from app.user import user_db
+from app.user.user_schema import UserCreate, UserUpdate
 from app.core.security import hash_password, create_access_token, create_refresh_token, REFRESH_TOKEN_EXPIRE_DAYS
-from app.models.user import User
-from app.models.refresh_token import RefreshToken
-from app.services import category_service
+from app.user.user_model import User
+from app.auth.refresh_token import RefreshToken
+from app.category import category_service
 from app.core.errors import UnauthorizedError, ForbiddenError, UserNotFoundError, EmailAlreadyExistsError
 
 # Create a new user

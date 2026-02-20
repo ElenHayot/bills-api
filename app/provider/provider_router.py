@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from app.core.database import get_db
-from app.models.user import User
-from app.schemas.provider import ProviderBase, ProviderRead, ProviderUpdate
+from app.user.user_model import User
+from app.provider.provider_schema import ProviderBase, ProviderRead, ProviderUpdate
 from app.dependencies.auth import get_current_user
-from app.services import provider_service
+from app.provider import provider_service
 
 provider_router = APIRouter(tags=["Providers"])
 

@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import select, func
-from app.models.user import User
+from app.user.user_model import User
 from app.core.security import verify_password
 from typing import Optional
 

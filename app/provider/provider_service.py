@@ -1,9 +1,9 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
-from app.models.provider import Provider
-from app.schemas.provider import ProviderBase, ProviderUpdate
-from app.models.user import User
-from app.crud import provider_db
+from app.provider.provider_model import Provider
+from app.provider.provider_schema import ProviderBase, ProviderUpdate
+from app.user.user_model import User
+from app.provider import provider_db
 from app.core.errors import AlreadyExistsError, ResourceNotFoundError, ForbiddenError
 
 # Create a new provider

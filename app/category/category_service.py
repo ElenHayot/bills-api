@@ -1,10 +1,10 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
-from app.models.category import Category
-from app.schemas.category import CategoryBase, CategoryUpdate
-from app.models.user import User
-from app.crud import category_db
-from app.crud import bill_db
+from app.category.category_model import Category
+from app.category.category_schema import CategoryBase, CategoryUpdate
+from app.user.user_model import User
+from app.category import category_db
+from app.bill import bill_db
 from app.core.errors import UnauthorizedError, ForbiddenError, ResourceNotFoundError, AlreadyExistsError, DeleteConflictError
 
 # Create a new category

@@ -1,16 +1,16 @@
 from fastapi import  Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
-from app.schemas.auth import  RefreshRequest, RegisterResponse
+from app.auth.auth_schema import  RefreshRequest, RegisterResponse
 from jose import jwt, JWTError
 from datetime import datetime, timedelta
 
 from app.core.security import SECRET_KEY, ALGORITHM
 from app.core.database import get_db
 from app.core.security import create_access_token, create_refresh_token, verify_password, REFRESH_TOKEN_EXPIRE_DAYS
-from app.models.user import User
-from app.models.refresh_token import RefreshToken
-from app.schemas.user import UserRead
+from app.user.user_model import User
+from app.auth.refresh_token import RefreshToken
+from app.user.user_schema import UserRead
 from app.core.errors import InvalidCredentialsError, UnauthorizedError, AccountLockedError
 
 # Log-in an existing user

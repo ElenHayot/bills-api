@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
-from app.schemas.dashboard import DashboardResponse
-from app.models.user import User
-from app.services import bill_service
+from app.dashboard.dashboard_schema import DashboardResponse
+from app.user.user_model import User
+from app.bill import bill_service
 from datetime import datetime
 
 def get_dashboard(db: Session, current_user: User, year: int = datetime.now().year) -> DashboardResponse:

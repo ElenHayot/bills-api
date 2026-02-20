@@ -1,11 +1,12 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
-from app.models.bill import Bill
-from app.schemas.bill import BillBase, BillUpdate
-from app.schemas.dashboard import DashboardCategoryStats, DashboardGlobalStats
-from app.models.user import User
-from app.crud import bill_db
-from app.services import category_service, provider_service
+from app.bill.bill_model import Bill
+from app.bill.bill_schema import BillBase, BillUpdate
+from app.dashboard.dashboard_schema import DashboardCategoryStats, DashboardGlobalStats
+from app.user.user_model import User
+from app.bill import bill_db
+from app.category import category_service
+from app.provider import provider_service
 from datetime import datetime, date
 from decimal import Decimal
 from app.core.errors import UnauthorizedError, ForbiddenError, ResourceNotFoundError

@@ -6,11 +6,11 @@ from sqlalchemy import pool
 from alembic import context
 import sys
 from app.core.database import Base
-from app.models.user import User
-from app.models.bill import Bill
-from app.models.category import Category
-from app.models.refresh_token import RefreshToken
-from app.models.provider import Provider
+from app.user.user_model import User
+from app.bill.bill_model import Bill
+from app.category.category_model import Category
+from app.auth.refresh_token import RefreshToken
+from app.provider.provider_model import Provider
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

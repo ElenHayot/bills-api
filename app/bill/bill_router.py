@@ -2,10 +2,10 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.dependencies.auth import get_current_user
-from app.models.user import User
-from app.schemas.bill import BillBase, BillRead, BillUpdate
-from app.schemas.dashboard import DashboardCategoryStats, DashboardGlobalStats
-from app.services import bill_service
+from app.user.user_model import User
+from app.bill.bill_schema import BillBase, BillRead, BillUpdate
+from app.dashboard.dashboard_schema import DashboardCategoryStats, DashboardGlobalStats
+from app.bill import bill_service
 from decimal import Decimal
 
 bill_router = APIRouter(tags=["Bills"])

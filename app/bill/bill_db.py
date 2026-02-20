@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import select, func, extract
-from app.models.bill import Bill
-from app.models.category import Category
+from app.bill.bill_model import Bill
+from app.category.category_model import Category
 from datetime import datetime
 from decimal import Decimal
 

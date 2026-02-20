@@ -2,13 +2,13 @@ from fastapi import FastAPI
 from app.core.database import Base, engine
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.models import user
-from app.routers.auth import auth_router
-from app.routers.user import user_router
-from app.routers.category import category_router
-from app.routers.bill import bill_router
-from app.routers.dashboard import dashboard_router
-from app.routers.provider import provider_router
+from app.user import user_model
+from app.auth.auth_router import auth_router
+from app.user.user_router import user_router
+from app.category.category_router import category_router
+from app.bill.bill_router import bill_router
+from app.dashboard.dashboard_router import dashboard_router
+from app.provider.provider_router import provider_router
 
 app = FastAPI(title="Bills API")
 

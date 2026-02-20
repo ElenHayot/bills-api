@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr
-from app.schemas.user import UserRead
+from app.user.user_schema import UserRead
 
 class LoginRequest(BaseModel):
     email: EmailStr

@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import select
-from app.models.category import Category
+from app.category.category_model import Category
 
 # Get all categories of one user
 def get_all_categories(db: Session, user_id: int) -> list[Category]:

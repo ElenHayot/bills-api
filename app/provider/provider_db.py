@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import select, func
-from app.models.provider import Provider
+from app.provider.provider_model import Provider
 
 # Get all providers
 def get_all_providers(db: Session, user_id: int, name: str = "", limit: int = None, offset: int = None) -> list[Provider]:
