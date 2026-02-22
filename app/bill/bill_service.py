@@ -46,7 +46,7 @@ def get_all_bills(db: Session, current_user: User,
 def get_bill_by_id(db: Session, current_user: User, bill_id: int) -> Bill:
     bill = bill_db.get_bill_by_id(db, current_user.id, bill_id)
     if not bill:
-        raise ResourceNotFoundError(messagel=f"Facture {bill_id} inconnue")
+        raise ResourceNotFoundError(message=f"Facture {bill_id} inconnue")
     
     return bill
 

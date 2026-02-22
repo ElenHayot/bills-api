@@ -27,7 +27,7 @@ def get_all_providers(db: Session, current_user: User, page: int, page_size: int
 def get_provider_by_id(db: Session, current_user: User, provider_id: int) -> Provider:
     provider = provider_db.get_provider_by_id(db, current_user.id, provider_id)
     if not provider:
-        raise ResourceNotFoundError(message=f"Fournisseur {provider_id} inconnu")
+        raise ResourceNotFoundError(message=f"Fournisseur inconnu")
     
     return provider
 
