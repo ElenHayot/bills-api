@@ -1,3 +1,12 @@
+"""
+Copyright (c) 2026 Elen Hayot
+All rights reserved.
+
+This software is the confidential and proprietary information of Elen Hayot.
+You shall not disclose such Confidential Information and shall use it only in 
+accordance with the terms of the license agreement.
+"""
+
 from unit_tests.datas import (
     URL_AUTH, URL_USERS, URL_CATEGORIES, URL_BILLS,
     john_doe, login_john_doe, test_bill, test_bill_2,

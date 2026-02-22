@@ -1,8 +1,17 @@
+"""
+Copyright (c) 2026 Elen Hayot
+All rights reserved.
+
+This software is the confidential and proprietary information of Elen Hayot.
+You shall not disclose such Confidential Information and shall use it only in 
+accordance with the terms of the license agreement.
+"""
+
 import random
 from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
 
-from app.models.bill import Bill
+from app.bill.bill_model import Bill
 
 TITLES = [
     "Supermarket",

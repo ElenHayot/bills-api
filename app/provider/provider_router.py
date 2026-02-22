@@ -1,3 +1,12 @@
+"""
+Copyright (c) 2026 Elen Hayot
+All rights reserved.
+
+This software is the confidential and proprietary information of Elen Hayot.
+You shall not disclose such Confidential Information and shall use it only in 
+accordance with the terms of the license agreement.
+"""
+
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from app.core.database import get_db

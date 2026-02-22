@@ -1,3 +1,12 @@
+"""
+Copyright (c) 2026 Elen Hayot
+All rights reserved.
+
+This software is the confidential and proprietary information of Elen Hayot.
+You shall not disclose such Confidential Information and shall use it only in 
+accordance with the terms of the license agreement.
+"""
+
 """update tables relationships
 
 Revision ID: ef5580342f45

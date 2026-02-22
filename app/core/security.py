@@ -1,9 +1,19 @@
+"""
+Copyright (c) 2026 Elen Hayot
+All rights reserved.
+
+This software is the confidential and proprietary information of Elen Hayot.
+You shall not disclose such Confidential Information and shall use it only in 
+accordance with the terms of the license agreement.
+"""
+
+import os
 from datetime import datetime, timedelta
 from jose import jwt
 from passlib.context import CryptContext
 from uuid import uuid4
 
-SECRET_KEY = "CHANGE_ME_IN_ENV"
+SECRET_KEY = os.getenv("SECRET_KEY", "CHANGE_ME_IN_ENV")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 15
 REFRESH_TOKEN_EXPIRE_DAYS = 30

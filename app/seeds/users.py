@@ -1,5 +1,14 @@
+"""
+Copyright (c) 2026 Elen Hayot
+All rights reserved.
+
+This software is the confidential and proprietary information of Elen Hayot.
+You shall not disclose such Confidential Information and shall use it only in 
+accordance with the terms of the license agreement.
+"""
+
 from sqlalchemy.orm import Session
-from app.models.user import User
+from app.user.user_model import User
 from app.core.security import hash_password
 
 DEV_USER_EMAIL = "dev@example.com"

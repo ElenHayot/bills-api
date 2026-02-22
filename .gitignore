@@ -21,3 +21,5 @@ htmlcov/
 
 # Env variables
 .env
+.env.production
+.env.test
