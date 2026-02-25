@@ -1,0 +1,47 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16
+    container_name: bills-postgres
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: bills_db
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  app:
+    build: .
+    container_name: bills-api
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/bills_db
+      - SECRET_KEY=une_clé_secrète_jwt_très_longue_et_aléatoire
+      - ENVIRONMENT=development
+      - ALLOWED_ORIGINS=https://localhost:8000,http://localhost:8000
+    depends_on:
+      - db
+    volumes:
+      - ./certs:/app/certs:ro
+
+  nginx:
+    image: nginx:alpine
+    container_name: bills-nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./certs:/etc/nginx/certs:ro
+    depends_on:
+      - app
+
+volumes:
+  pgdata:

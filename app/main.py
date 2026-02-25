@@ -68,7 +68,10 @@ app.add_middleware(SecurityHeadersMiddleware)
 
 # Hôtes de confiance (uniquement en production)
 if os.getenv("ENVIRONMENT") == "production":
-    app.add_middleware(TrustedHostMiddleware, allowed_hosts=["ton-domaine.com", "www.ton-domaine.com"])
+    app.add_middleware(TrustedHostMiddleware, allowed_hosts=os.getenv("ALLOWED_HOSTS", "ton-domaine.com,www.ton-domaine.com").split(","))
+    
+    # Forcer HTTPS en production
+    app.add_middleware(HTTPSRedirectMiddleware)
 
 API_VERSION = "v1"
 
