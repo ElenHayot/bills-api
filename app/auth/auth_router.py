@@ -11,7 +11,7 @@ from fastapi import APIRouter, Depends, Query
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from app.core.database import get_db
-from app.auth.auth_schema import RegisterResponse, Token, RefreshRequest
+from app.auth.auth_schema import RegisterResponse, Token, RefreshRequest, LogoutRequest
 from app.auth import auth_service
 from app.user.user_model import User
 from app.dependencies.auth import get_current_user
@@ -33,7 +33,7 @@ def refresh_token(payload: RefreshRequest):
 
 @auth_router.post("/logout/",
                   summary="Logout the current user",
-                  description="Delete the current user's refresh token")
-def logout(payload: RefreshRequest, db: Session = Depends(get_db)):
-    auth_service.logout(db, payload.refresh_token)
-    return {"message": "Logged out"}
+                  description="Delete the current user's refresh token and blacklist access token")
+def logout(payload: LogoutRequest, db: Session = Depends(get_db)):
+    auth_service.logout(db, payload.refresh_token, payload.access_token)
+    return {"message": "Logged out successfully"}

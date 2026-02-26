@@ -9,14 +9,9 @@ accordance with the terms of the license agreement.
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base, Session
-import os
+from app.core.settings import settings
 
-DATABASE_URL = os.getenv(
-    "DATABASE_URL",
-    "postgresql://postgres:postgres@localhost:5432/bills_db"
-)
-
-engine = create_engine(DATABASE_URL, future=True)
+engine = create_engine(settings.database_url, future=True)
 
 SessionLocal = sessionmaker(
     autocommit=False,

@@ -35,13 +35,6 @@ def read_all(db: Session = Depends(get_db), current_user: User = Depends(get_cur
              min_amount: Decimal = Query(None), max_amount: Decimal = Query(None)):
     return bill_service.get_all_bills(db, current_user, page, page_size, category_id, year, title, min_amount, max_amount)
 
-"""
-# GET : Get bills statistics for the total period
-@bill_router.get("/summary", response_model=list[BillPeriodStats])
-def get_statistics(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    return bill_service.get_bills_period_statistics(db, current_user, None, None)
-"""
-
 # GET : Get bills' statistics for a given period
 @bill_router.get("/summary/period/", response_model=list[DashboardGlobalStats],
                     summary="Bills period data for the current user",

@@ -20,6 +20,7 @@ from app.bill.bill_model import Bill
 from app.category.category_model import Category
 from app.auth.refresh_token import RefreshToken
 from app.provider.provider_model import Provider
+from app.auth.blacklisted_token import BlacklistedToken
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

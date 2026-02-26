@@ -21,5 +21,12 @@ htmlcov/
 
 # Env variables
 .env
+.env.prod
 .env.production
+.env.staging
 .env.test
+
+# Certificats
+*.pem
+*.key
+*.crt

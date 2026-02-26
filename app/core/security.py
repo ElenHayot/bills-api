@@ -12,11 +12,12 @@ from datetime import datetime, timedelta
 from jose import jwt
 from passlib.context import CryptContext
 from uuid import uuid4
+from app.core.settings import settings
 
-SECRET_KEY = os.getenv("SECRET_KEY", "CHANGE_ME_IN_ENV")
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 15
-REFRESH_TOKEN_EXPIRE_DAYS = 30
+SECRET_KEY = settings.secret_key
+ALGORITHM = settings.algorithm
+ACCESS_TOKEN_EXPIRE_MINUTES = settings.access_token_expire_minutes
+REFRESH_TOKEN_EXPIRE_DAYS = settings.refresh_token_expire_days
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated= "auto")
 

@@ -19,6 +19,7 @@ from app.core.database import get_db
 from app.core.security import create_access_token, create_refresh_token, verify_password, REFRESH_TOKEN_EXPIRE_DAYS
 from app.user.user_model import User
 from app.auth.refresh_token import RefreshToken
+from app.auth.blacklisted_token import BlacklistedToken
 from app.user.user_schema import UserRead
 from app.core.errors import InvalidCredentialsError, UnauthorizedError, AccountLockedError
 
@@ -86,14 +87,64 @@ def refresh_token(payload: RefreshRequest):
         "refresh_token": create_refresh_token({"sub": user_id}),
     }
 
-# Logout user - delete associated refresh token
-def logout(db: Session, refresh_token: str):
+# Logout user - delete associated refresh token and blacklist access token
+def logout(db: Session, refresh_token: str, access_token: str = None):
+    # Delete refresh token
     token = db.query(RefreshToken).filter(
         RefreshToken.token == refresh_token
     ).first()
 
-    if not token:
-        return
+    if token:
+        db.delete(token)
 
-    db.delete(token)
+    # Blacklist access token if provided
+    if access_token:
+        try:
+            decoded = jwt.decode(access_token, SECRET_KEY, algorithms=[ALGORITHM])
+            exp_timestamp = decoded.get("exp")
+            user_id = decoded.get("sub")
+            
+            if exp_timestamp and user_id:
+                expires_at = datetime.fromtimestamp(exp_timestamp)
+                
+                # Only blacklist if token is not already expired
+                if expires_at > datetime.now():
+                    blacklisted_token = BlacklistedToken(
+                        token=access_token,
+                        expires_at=expires_at,
+                        user_id=int(user_id)
+                    )
+                    db.add(blacklisted_token)
+        except JWTError:
+            pass  # Token is invalid, no need to blacklist
+
     db.commit()
+
+# Check if a token is blacklisted
+def is_token_blacklisted(db: Session, token: str) -> bool:
+    blacklisted = db.query(BlacklistedToken).filter(
+        BlacklistedToken.token == token
+    ).first()
+    
+    if not blacklisted:
+        return False
+    
+    # Remove expired tokens from blacklist and return False
+    if blacklisted.expires_at <= datetime.utcnow():
+        db.delete(blacklisted)
+        db.commit()
+        return False
+    
+    return True
+
+# Clean up expired blacklisted tokens
+def cleanup_expired_blacklisted_tokens(db: Session):
+    expired_tokens = db.query(BlacklistedToken).filter(
+        BlacklistedToken.expires_at <= datetime.utcnow()
+    ).all()
+    
+    for token in expired_tokens:
+        db.delete(token)
+    
+    if expired_tokens:
+        db.commit()

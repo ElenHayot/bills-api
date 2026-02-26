@@ -18,6 +18,7 @@ from starlette.requests import Request
 import os
 
 from app.core.database import Base, engine
+from app.core.settings import settings
 
 from app.user import user_model
 from app.auth.auth_router import auth_router
@@ -50,37 +51,41 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         
         return response
 
-app = FastAPI(title="Bills API")
+app = FastAPI(title=settings.app_name,
+              description=settings.app_description,
+              version=settings.version,
+              contact={"name": "Elen Hayot", "email": "elen.hayot@gmail.com"},
+              license_info={"name": "MIT License"})
 
 # Configuration CORS via variables d'environnement
-allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000,http://localhost:5173,http://localhost:8081,http://localhost:5432").split(",")
+#allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000,http://localhost:5173,http://localhost:8081,http://localhost:5432").split(",")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allowed_origins,
-    allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allow_headers=["*"],
+    allow_origins=settings.allowed_origins,
+    allow_credentials=settings.allow_credentials,
+    allow_methods=settings.allow_methods,
+    allow_headers=settings.allow_headers,
 )
 
 # Ajouter les headers de sécurité
 app.add_middleware(SecurityHeadersMiddleware)
 
 # Hôtes de confiance (uniquement en production)
-if os.getenv("ENVIRONMENT") == "production":
-    app.add_middleware(TrustedHostMiddleware, allowed_hosts=os.getenv("ALLOWED_HOSTS", "ton-domaine.com,www.ton-domaine.com").split(","))
+if settings.environment == "production" or settings.environment == "staging":
+    app.add_middleware(TrustedHostMiddleware, allowed_hosts=settings.allowed_hosts.split(","))
     
     # Forcer HTTPS en production
     app.add_middleware(HTTPSRedirectMiddleware)
 
-API_VERSION = "v1"
+API_PREFIX = f"{settings.url_prefix}/{settings.url_version}"
 
-app.include_router(auth_router, prefix=f"/api/{API_VERSION}/auth")
-app.include_router(user_router, prefix=f"/api/{API_VERSION}/users")
-app.include_router(category_router, prefix=f"/api/{API_VERSION}/categories")
-app.include_router(bill_router, prefix=f"/api/{API_VERSION}/bills")
-app.include_router(dashboard_router,prefix=f"/api/{API_VERSION}/dashboard")
-app.include_router(provider_router, prefix=f"/api/{API_VERSION}/providers")
+app.include_router(auth_router, prefix=f"{API_PREFIX}/auth")
+app.include_router(user_router, prefix=f"{API_PREFIX}/users")
+app.include_router(category_router, prefix=f"{API_PREFIX}/categories")
+app.include_router(bill_router, prefix=f"{API_PREFIX}/bills")
+app.include_router(dashboard_router,prefix=f"{API_PREFIX}/dashboard")
+app.include_router(provider_router, prefix=f"{API_PREFIX}/providers")
 
 def lifespan(app: FastAPI):
     Base.metadata.create_all(bind=engine)
