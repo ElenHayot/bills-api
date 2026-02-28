@@ -8,10 +8,8 @@ accordance with the terms of the license agreement.
 """
 
 from sqlalchemy.orm import Session
-from sqlalchemy import select, func
+from sqlalchemy import select
 from app.user.user_model import User
-from app.core.security import verify_password
-from typing import Optional
 
 # Get all users
 def get_all_users(db: Session) -> list[User]:
@@ -41,7 +39,8 @@ def create_user(db: Session, db_user: User) -> User:
 def update_user(db: Session, user: User, updates: dict) -> User:
     for key, value in updates.items():
         # Rename the key "password" to "password_hash" for db_user
-        if key == "password" : key = "password_hash"
+        if key == "password":
+            key = "password_hash"
         if hasattr(user, key):  # petit garde-fou si mauvaise key
             setattr(user, key, value)
 

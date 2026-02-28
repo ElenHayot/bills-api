@@ -8,13 +8,12 @@ accordance with the terms of the license agreement.
 """
 
 from sqlalchemy.orm import Session
-from fastapi import HTTPException, status
 from app.category.category_model import Category
 from app.category.category_schema import CategoryBase, CategoryUpdate
 from app.user.user_model import User
 from app.category import category_db
 from app.bill import bill_db
-from app.core.errors import UnauthorizedError, ForbiddenError, ResourceNotFoundError, AlreadyExistsError, DeleteConflictError
+from app.core.errors import ForbiddenError, ResourceNotFoundError, AlreadyExistsError, DeleteConflictError
 
 # Create a new category
 def create_category(db: Session, current_user: User, category: CategoryBase) -> Category:

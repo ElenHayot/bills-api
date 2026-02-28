@@ -9,7 +9,6 @@ accordance with the terms of the license agreement.
 
 from unit_tests.datas import URL_AUTH, URL_USERS, URL_CATEGORIES
 from unit_tests.datas import john_doe, login_john_doe
-import pytest
 
 def test_create_user(client):
     # Create user

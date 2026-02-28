@@ -8,7 +8,6 @@ accordance with the terms of the license agreement.
 """
 
 from sqlalchemy.orm import Session
-from fastapi import HTTPException, status
 from app.provider.provider_model import Provider
 from app.provider.provider_schema import ProviderBase, ProviderUpdate
 from app.user.user_model import User
@@ -36,7 +35,7 @@ def get_all_providers(db: Session, current_user: User, page: int, page_size: int
 def get_provider_by_id(db: Session, current_user: User, provider_id: int) -> Provider:
     provider = provider_db.get_provider_by_id(db, current_user.id, provider_id)
     if not provider:
-        raise ResourceNotFoundError(message=f"Fournisseur inconnu")
+        raise ResourceNotFoundError(message="Fournisseur inconnu")
     
     return provider
 

@@ -7,14 +7,12 @@ You shall not disclose such Confidential Information and shall use it only in
 accordance with the terms of the license agreement.
 """
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.auth.auth_schema import RegisterResponse, Token, RefreshRequest, LogoutRequest
 from app.auth import auth_service
-from app.user.user_model import User
-from app.dependencies.auth import get_current_user
 
 auth_router = APIRouter(tags=["Auth"])
 

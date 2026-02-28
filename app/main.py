@@ -10,8 +10,6 @@ accordance with the terms of the license agreement.
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
-from fastapi.responses import JSONResponse
-from starlette.middleware import Middleware
 from starlette.middleware.httpsredirect import HTTPSRedirectMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
@@ -20,7 +18,6 @@ import os
 from app.core.database import Base, engine
 from app.core.settings import settings
 
-from app.user import user_model
 from app.auth.auth_router import auth_router
 from app.user.user_router import user_router
 from app.category.category_router import category_router

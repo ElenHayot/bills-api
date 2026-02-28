@@ -7,14 +7,14 @@ You shall not disclose such Confidential Information and shall use it only in
 accordance with the terms of the license agreement.
 """
 
-from app.main import API_VERSION
+from app.main import API_PREFIX
 
-URL_AUTH = f"/api/{API_VERSION}/auth"
-URL_USERS = f"/api/{API_VERSION}/users"
-URL_CATEGORIES = f"/api/{API_VERSION}/categories"
-URL_BILLS = f"/api/{API_VERSION}/bills"
-URL_PROVIDERS = f"/api/{API_VERSION}/providers"
-URL_DASHBOARD = f"/api/{API_VERSION}/dashboard"
+URL_AUTH = f"{API_PREFIX}/auth"
+URL_USERS = f"{API_PREFIX}/users"
+URL_CATEGORIES = f"{API_PREFIX}/categories"
+URL_BILLS = f"{API_PREFIX}/bills"
+URL_PROVIDERS = f"{API_PREFIX}/providers"
+URL_DASHBOARD = f"{API_PREFIX}/dashboard"
 
 john_doe = {"email": "johndoe@example.com", "password": "jd123PWD"}
 login_john_doe = {"username": "johndoe@example.com", "password": "jd123PWD"}

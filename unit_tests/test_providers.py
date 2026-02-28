@@ -12,7 +12,6 @@ from unit_tests.datas import (
     URL_AUTH, URL_USERS, URL_PROVIDERS,
     john_doe, login_john_doe, test_provider, test_provider_2
 )
-import pytest
 
 def get_auth_headers(client, user_data=login_john_doe):
     """Helper pour obtenir les headers d'authentification"""

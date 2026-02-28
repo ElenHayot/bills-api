@@ -7,7 +7,7 @@ You shall not disclose such Confidential Information and shall use it only in
 accordance with the terms of the license agreement.
 """
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.user.user_model import User

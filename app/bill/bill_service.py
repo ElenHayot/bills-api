@@ -8,7 +8,6 @@ accordance with the terms of the license agreement.
 """
 
 from sqlalchemy.orm import Session
-from fastapi import HTTPException, status
 from app.bill.bill_model import Bill
 from app.bill.bill_schema import BillBase, BillUpdate
 from app.dashboard.dashboard_schema import DashboardCategoryStats, DashboardGlobalStats
@@ -16,14 +15,14 @@ from app.user.user_model import User
 from app.bill import bill_db
 from app.category import category_service
 from app.provider import provider_service
-from datetime import datetime, date
+from datetime import datetime
 from decimal import Decimal
-from app.core.errors import UnauthorizedError, ForbiddenError, ResourceNotFoundError
+from app.core.errors import ForbiddenError, ResourceNotFoundError
 
 # Create a new bill
 def create_bill(db: Session, current_user: User, bill: BillBase) -> Bill:
     # Verify existing associated category - exception managed in service function
-    cat = category_service.get_category_by_id(db, current_user, bill.category_id)
+    category_service.get_category_by_id(db, current_user, bill.category_id)
 
     loc_provider_name = ""
     if bill.provider_id:
@@ -69,7 +68,7 @@ def update_bill(db: Session, current_user: User, bill_id: int, updates: BillUpda
   
     # If category changed - verify it exists. Exception managed in service function:
     if updates.category_id:
-        cat = category_service.get_category_by_id(db, current_user, updates.category_id)
+        category_service.get_category_by_id(db, current_user, updates.category_id)
 
     update_data = updates.model_dump(exclude_unset=True, exclude={'provider_name'})
     if updates.provider_id or updates.provider_name:

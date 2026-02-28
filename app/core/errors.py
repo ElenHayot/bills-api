@@ -7,7 +7,6 @@ You shall not disclose such Confidential Information and shall use it only in
 accordance with the terms of the license agreement.
 """
 
-from email import message
 from enum import Enum
 from typing import Optional, Dict, Any
 from fastapi import HTTPException, status

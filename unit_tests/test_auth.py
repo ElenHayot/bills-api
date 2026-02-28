@@ -9,8 +9,6 @@ accordance with the terms of the license agreement.
 
 from unit_tests.datas import URL_AUTH, URL_USERS, URL_CATEGORIES, URL_BILLS
 from unit_tests.datas import john_doe, login_john_doe, patrick, login_patrick, john_doe_category
-import pytest
-
 
 # Test login a user - create an access_token and a refresh_token
 def test_login_user(client):

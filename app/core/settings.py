@@ -2,7 +2,6 @@ from functools import lru_cache
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import List
 
-from sqlalchemy import Boolean
 
 
 class Settings(BaseSettings):
@@ -15,7 +14,7 @@ class Settings(BaseSettings):
     url_version: str = "v1"
 
     # ===== URL PREFIX =====
-    url_prefix: str = f"/api"
+    url_prefix: str = "/api"
 
     # ===== Default pagination =====
     default_page_size: int = 10

@@ -7,7 +7,6 @@ You shall not disclose such Confidential Information and shall use it only in
 accordance with the terms of the license agreement.
 """
 
-import os
 from datetime import datetime, timedelta
 from jose import jwt
 from passlib.context import CryptContext

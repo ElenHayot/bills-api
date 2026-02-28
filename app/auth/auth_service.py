@@ -7,7 +7,7 @@ You shall not disclose such Confidential Information and shall use it only in
 accordance with the terms of the license agreement.
 """
 
-from fastapi import  Depends, HTTPException, status
+from fastapi import  Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from app.auth.auth_schema import  RefreshRequest, RegisterResponse

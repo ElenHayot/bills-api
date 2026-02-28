@@ -8,7 +8,7 @@ accordance with the terms of the license agreement.
 """
 
 from sqlalchemy.orm import Session
-from sqlalchemy import select, func
+from sqlalchemy import select
 from app.provider.provider_model import Provider
 
 # Get all providers

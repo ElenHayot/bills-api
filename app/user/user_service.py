@@ -8,7 +8,6 @@ accordance with the terms of the license agreement.
 """
 
 from sqlalchemy.orm import Session
-from fastapi import HTTPException, status
 from datetime import datetime, timedelta
 
 from app.user import user_db
@@ -112,7 +111,7 @@ def update_user(db: Session, current_user: User, updates: UserUpdate, user_id: i
 # Delete an account
 def delete_user(db: Session, current_user: User, user_id: int):
     if not current_user:
-        raise UnauthorizedError(message=f"Il faut être connecté pour pouvoir exécuter cette opération")
+        raise UnauthorizedError(message="Il faut être connecté pour pouvoir exécuter cette opération")
     
     user = get_user_by_id(db, user_id)
     if not user:
@@ -120,6 +119,6 @@ def delete_user(db: Session, current_user: User, user_id: int):
     
      # Verify if the user can update
     if current_user.id != user.id:
-        raise ForbiddenError(message=f"Vous ne pouvez pas supprimer cet utilisateur.")
+        raise ForbiddenError(message="Vous ne pouvez pas supprimer cet utilisateur.")
     
     return user_db.delete_user(db, user)
