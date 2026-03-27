@@ -10,6 +10,7 @@ accordance with the terms of the license agreement.
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from app.core.database import get_db
+from app.core.settings import settings
 from app.user.user_model import User
 from app.provider.provider_schema import ProviderBase, ProviderRead, ProviderUpdate
 from app.dependencies.auth import get_current_user
@@ -27,8 +28,10 @@ def create(provider_data: ProviderBase, current_user: User = Depends(get_current
 @provider_router.get("/", response_model=list[ProviderRead],
                     summary="Providers data for the current user",
                     description="Returns all current user's providers")
-def read_all(db: Session = Depends(get_db), current_user: User = Depends(get_current_user), 
-             page: int = Query(1, ge=1), page_size: int = Query(20, ge=1, le=100), 
+def read_all(db: Session = Depends(get_db), 
+             current_user: User = Depends(get_current_user), 
+             page: int = Query(1, ge=1), 
+             page_size: int = Query(settings.default_page_size, ge=1, le=settings.max_page_size), 
              name: str = Query(None)):
     return provider_service.get_all_providers(db, current_user, page, page_size, name)
 

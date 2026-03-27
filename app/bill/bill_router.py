@@ -11,6 +11,7 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.dependencies.auth import get_current_user
+from app.core.settings import settings
 from app.user.user_model import User
 from app.bill.bill_schema import BillBase, BillRead, BillUpdate
 from app.dashboard.dashboard_schema import DashboardCategoryStats, DashboardGlobalStats
@@ -29,10 +30,16 @@ def create(bill_data: BillBase, current_user: User = Depends(get_current_user), 
 @bill_router.get("/", response_model=list[BillRead],
                     summary="Bills data for the current user",
                     description="Return a filtered list of the current user's bills")
-def read_all(db: Session = Depends(get_db), current_user: User = Depends(get_current_user), 
-             page: int = Query(1, ge=1), page_size: int = Query(20, ge=1, le=100), 
-             category_id: int = Query(None), year: int = Query(None), title: str = Query(None),
-             min_amount: Decimal = Query(None), max_amount: Decimal = Query(None)):
+def read_all(db: Session = Depends(get_db), 
+             current_user: User = Depends(get_current_user), 
+             page: int = Query(1, ge=1), 
+             page_size: int = Query(settings.default_page_size, ge=1, le=settings.max_page_size), 
+             category_id: int = Query(None), 
+             year: int = Query(None), 
+             title: str = Query(None),
+             min_amount: Decimal = Query(None), 
+             max_amount: Decimal = Query(None)
+            ):
     return bill_service.get_all_bills(db, current_user, page, page_size, category_id, year, title, min_amount, max_amount)
 
 # GET : Get bills' statistics for a given period
